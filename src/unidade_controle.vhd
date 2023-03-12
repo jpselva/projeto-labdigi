@@ -55,7 +55,7 @@ begin
     end process;
 
     -- logica de proximo estado
-    control: process(iniciar, jogada_feita, jogada_correta, fim_contjog,
+    control: process(Eatual, iniciar, jogada_feita, jogada_correta, fim_contjog,
                      timeout_tnota, timeout_tsil)
     begin
         zera_contjog <= '0';
@@ -72,6 +72,8 @@ begin
         conta_tnota <= '0';
         zera_tsil <= '0';
         conta_tsil <= '0';
+        toca_nota <= '0';
+        pronto <= '0';
 
         case Eatual is
 
