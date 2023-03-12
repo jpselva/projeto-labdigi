@@ -6,45 +6,45 @@ use ieee.math_real.all;
 entity fluxo_dados is
   port (
     clock               : in  std_logic;
-    zeraE               : in  std_logic;
-    contaE              : in  std_logic;
-    escreveM            : in  std_logic;
-    limpaRC             : in  std_logic;
-    registraRC          : in  std_logic;
-    chaves              : in  std_logic_vector (3 downto 0);
-    contaT              : in  std_logic;
-    contaTI             : in  std_logic;
-    zeraT               : in  std_logic;
-    zeraTI              : in  std_logic;
-    leds_src            : in  std_logic;
-    zeraCR              : in  std_logic;
-    contaCR             : in  std_logic;
-    zeraD               : in  std_logic;
-    fimTI               : out std_logic;
+    zera_contjog        : in  std_logic;
+    conta_contjog       : in  std_logic;
+    zera_regnota        : in  std_logic;
+    registra_regnota    : in  std_logic;
+    chaves              : in  std_logic_vector (11 downto 0);
+    zera_regmasc        : in  std_logic;
+    registra_regmasc    : in  std_logic;
+    masc_dado           : in  std_logic_vector (11 downto 0);
+    nota_src            : in  std_logic;
+    zera_conterros      : in  std_logic;
+    conta_conterros     : in  std_logic;
+    zera_detec          : in  std_logic;
+    zera_tnota          : in  std_logic;
+    conta_tnota         : in  std_logic;
+    zera_tsil           : in  std_logic;
+    conta_tsil          : in  std_logic;
+    fim_contjog         : out std_logic;
     jogada_correta      : out std_logic;
-    fimE                : out std_logic;
-    fimL                : out std_logic;
-    fimT                : out std_logic;
+    nota                : out std_logic_vector (11 downto 0);
+    erros               : out std_logic_vector (6  downto 0);
     jogada_feita        : out std_logic;
-    db_contagem         : out std_logic_vector (3 downto 0);
-    db_memoria          : out std_logic_vector (3 downto 0);
-    db_jogada_feita     : out std_logic_vector (3 downto 0);
-    db_rodada           : out std_logic_vector (3 downto 0);
-    leds                : out std_logic_vector (3 downto 0);
-    enderecoIgualRodada : out std_logic
+    timeout_tnota       : out std_logic;
+    timeout_tsil        : out std_logic;
+    db_jogada           : out std_logic_vector (11 downto 0);
+    db_memoria          : out std_logic_vector (11 downto 0);
+    db_endereco         : out std_logic_vector (3  downto 0)
   );
 end entity fluxo_dados;
 
 architecture estrutural of fluxo_dados is
+  signal s_dado           : std_logic_vector (11 downto 0); 
+  signal s_mascara        : std_logic_vector (11 downto 0);
+  signal s_endereco       : std_logic_vector (3 downto 0);
+  signal s_chave_acionada : std_logic;
+  signal s_jogada         : std_logic_vector (11 downto 0);
+  signal not_zera_contjog : std_logic;
+  signal s_nota_masc      : std_logic_vector (11 downto 0);
+  signal s_jogada_correta : std_logic_vector (2 downto 0);
 
-  signal s_endereco      : std_logic_vector (3 downto 0);
-  signal s_rodada        : std_logic_vector (3 downto 0);
-  signal s_dado          : std_logic_vector (3 downto 0);
-  signal s_jogada        : std_logic_vector (3 downto 0);
-  signal not_zeraE       : std_logic;
-  signal not_zeraCR      : std_logic;
-  signal not_escreveM    : std_logic;
-  signal s_chaveAcionada : std_logic;
 
   component contador_163
     port (
@@ -78,14 +78,14 @@ architecture estrutural of fluxo_dados is
     );
   end component;
 
-  component ram_16x4 is
+  component ram_16x12 is
     port (
       clk           : in std_logic;           
       endereco      : in std_logic_vector (3 downto 0);
-      dado_entrada  : in std_logic_vector (3 downto 0);
+      dado_entrada  : in std_logic_vector (11 downto 0);
       we            : in std_logic;            -- we ativo em baixo
       ce            : in std_logic; 
-      dado_saida    : out std_logic_vector (3 downto 0)
+      dado_saida    : out std_logic_vector (11 downto 0)
     );
   end component;
 
@@ -129,26 +129,38 @@ begin
 
   -- sinais de controle ativos em alto
   -- sinais dos componentes ativos em baixo
-  not_zeraE <= not zeraE;
-  not_zeraCR <= not zeraCR;
-  not_escreveM <= not escreveM;
+  
+  
+  not_zera_contjog <= not zera_contjog;
+  --zera_conterros <= not zera_conterros;
+  --not_escreveM <= not escreveM;
 
   -- sinal para saber se ha chave acionada
-  s_chaveAcionada <= chaves(0) or chaves(1) or chaves(2) or chaves(3);
+  s_chave_acionada <= s_nota_masc(0) or s_nota_masc(1) or s_nota_masc( 2) or s_nota_masc( 3) 
+                   or s_nota_masc(4) or s_nota_masc(5) or s_nota_masc( 6) or s_nota_masc( 7) 
+                   or s_nota_masc(8) or s_nota_masc(9) or s_nota_masc(10) or s_nota_masc(11);
   
-  ContEnd: contador_163
+  jogada_correta <= s_jogada_correta(2) and s_jogada_correta(1) and s_jogada_correta(0);
+  s_nota_masc <= s_mascara and chaves;
+
+
+
+  ContJog: contador_163
     port map (
         clock => clock,
-        clr   => not_zeraE,  -- clr ativo em baixo
+        clr   => not_zera_contjog,  -- clr ativo em baixo
         ld    => '1',
         ent   => '1',
-        enp   => contaE,
+        enp   => conta_contjog,
         D     => "0000",
         Q     => s_endereco,
-        rco   => fimE
+        rco   => fim_contjog
     );
 
-  CompJog: comparador_85
+
+  --------  REVER COMPONENTE  --------
+
+  CompJog1: comparador_85
     port map (
         i_A3   => s_dado(3),
         i_B3   => s_jogada(3),
@@ -163,103 +175,136 @@ begin
         i_AEQB => '1',
         o_AGTB => open, -- saidas nao usadas
         o_ALTB => open,
-        o_AEQB => jogada_correta 
+        o_AEQB => s_jogada_correta(0) 
     );
-	 
-  MemJog: entity work.ram_16x4 (ram_modelsim) -- usar arquitetura para ModelSim
-  -- MemJog: entity work.ram_16x4 (ram_mif)  -- usar esta linha para Intel Quartus
+    CompJog2: comparador_85
     port map (
-       clk          => clock,
-       endereco     => s_endereco,
-       dado_entrada => s_jogada,
-       we           => not_escreveM, -- we ativo em baixo
-       ce           => '0',
-       dado_saida   => s_dado
-    );
-
-  RegChv: registrador_n
-    generic map (
-      N => 4
-    )
-    port map (
-      clock => clock,
-      clear => limpaRC,
-      enable => registraRC,
-      D => chaves,
-      Q => s_jogada
-    );
-
-  DetetJog: edge_detector
-    port map (
-      clock => clock,
-      reset => zeraD,
-      sinal => s_chaveAcionada,
-      pulso => jogada_feita
-    );
-
-  Timer: contador_m
-    generic map (
-        M => 5000
-    )
-    port map (
-        clock => clock,
-        zera_as => zeraT,
-        zera_s => '0',
-        conta => contaT,
-        Q => open,
-        fim => fimT,
-        meio => open
-    );
-
-    
-  TimerInicial: contador_m
-  generic map (
-      M => 2000
-  )
-  port map (
-      clock => clock,
-      zera_as => zeraTI,
-      zera_s => '0',
-      conta => contaTI,
-      Q => open,
-      fim => fimTI,
-      meio => open
-  );
-
-  ContRod: contador_163
-    port map (
-        clock => clock,
-        clr   => not_zeraCR,
-        ld    => '1',
-        ent   => '1',
-        enp   => contaCR,
-        D     => "0000",
-        Q     => s_rodada,
-        rco   => fimL
-    );
-
-  CompEnd: comparador_85
-    port map(
-        i_A3   => s_rodada(3),
-        i_B3   => s_endereco(3),
-        i_A2   => s_rodada(2),
-        i_B2   => s_endereco(2),
-        i_A1   => s_rodada(1),
-        i_B1   => s_endereco(1),
-        i_A0   => s_rodada(0),
-        i_B0   => s_endereco(0),
+        i_A3   => s_dado(7),
+        i_B3   => s_jogada(7),
+        i_A2   => s_dado(6),
+        i_B2   => s_jogada(6),
+        i_A1   => s_dado(5),
+        i_B1   => s_jogada(5),
+        i_A0   => s_dado(4),
+        i_B0   => s_jogada(4),
         i_AGTB => '0',
         i_ALTB => '0',
         i_AEQB => '1',
         o_AGTB => open, -- saidas nao usadas
         o_ALTB => open,
-        o_AEQB => enderecoIgualRodada
+        o_AEQB => s_jogada_correta(1) 
+    );
+    CompJog3: comparador_85
+    port map (
+        i_A3   => s_dado(11),
+        i_B3   => s_jogada(11),
+        i_A2   => s_dado(10),
+        i_B2   => s_jogada(10),
+        i_A1   => s_dado(9),
+        i_B1   => s_jogada(9),
+        i_A0   => s_dado(8),
+        i_B0   => s_jogada(8),
+        i_AGTB => '0',
+        i_ALTB => '0',
+        i_AEQB => '1',
+        o_AGTB => open, -- saidas nao usadas
+        o_ALTB => open,
+        o_AEQB => s_jogada_correta(2)
+    );
+	 
+
+  --------  REVER COMPONENTE  --------
+
+  MemJog: entity work.ram_16x12 (ram_modelsim) -- usar arquitetura para ModelSim
+  -- MemJog: entity work.ram_16x4 (ram_mif)  -- usar esta linha para Intel Quartus
+    port map (
+       clk          => clock,
+       endereco     => s_endereco,
+       dado_entrada => "000000000000",
+       we           => '1', -- we ativo em baixo
+       ce           => '0',
+       dado_saida   => s_dado
     );
 
-  leds <= s_dado when leds_src = '1' else chaves;
-  db_contagem <= s_endereco;
+
+  RegNota: registrador_n
+    generic map (
+      N => 12
+    )
+    port map (
+      clock => clock,
+      clear => zera_regnota,
+      enable => registra_regnota,
+      D => s_nota_masc,
+      Q => s_jogada
+    );
+
+  RegMasc: registrador_n
+  generic map (
+    N => 12
+  )
+  port map (
+    clock => clock,
+    clear => zera_regmasc,
+    enable => registra_regmasc,
+    D => masc_dado,
+    Q => s_mascara
+  );
+
+  DetetJog: edge_detector
+    port map (
+      clock => clock,
+      reset => zera_detec,
+      sinal => s_chave_acionada,
+      pulso => jogada_feita
+    );
+
+  TimerNota: contador_m
+    generic map (
+        M => 1000
+    )
+    port map (
+        clock => clock,
+        zera_as => zera_tnota,
+        zera_s => '0',
+        conta => conta_tnota,
+        Q => open,
+        fim => timeout_tnota,
+        meio => open
+    );
+
+    
+  TimerSilencio: contador_m
+  generic map (
+      M => 500
+  )
+  port map (
+      clock => clock,
+      zera_as => zera_tsil,
+      zera_s => '0',
+      conta => conta_tsil,
+      Q => open,
+      fim => timeout_tsil,
+      meio => open
+  );
+
+  ContadorErros: contador_m
+  generic map (
+      M => 99
+  )
+  port map (
+      clock => clock,
+      zera_as => zera_conterros,
+      zera_s => '0',
+      conta => conta_conterros,
+      Q => open,
+      fim => timeout_tsil,
+      meio => open
+  );
+
+  nota <= s_dado when nota_src = '1' else s_nota_masc;
+  db_endereco <= s_endereco;
   db_memoria  <= s_dado;
-  db_jogada_feita <= s_jogada;
-  db_rodada <= s_rodada;
+  db_jogada <= s_jogada;
 
 end architecture estrutural;
