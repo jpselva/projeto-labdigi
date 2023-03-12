@@ -86,9 +86,9 @@ begin
 
         -- Reset generation
         reset <= '1';
-        wait for 100 ns;
+        wait for 10*TbPeriod;
         reset <= '0';
-        wait for 100 ns;
+        wait for 10*TbPeriod;
 
         -- Initialize
         iniciar <= '1';
@@ -98,9 +98,10 @@ begin
 
         -- get all notes right
         for i in 0 to memoria'length-1 loop
-            wait for 1.5 sec;
+            chaves <= "000000000000";
+            wait for 20*TbPeriod;
             chaves <= memoria(i);
-            wait for 3 sec;
+            wait for 20*TbPeriod;
         end loop;
 
         wait for TbPeriod;

@@ -74,6 +74,7 @@ begin
         conta_tsil <= '0';
         toca_nota <= '0';
         pronto <= '0';
+        zera_detec <= '0';
 
         case Eatual is
 
