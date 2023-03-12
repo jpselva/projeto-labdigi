@@ -297,12 +297,12 @@ begin
       zera_as => zera_conterros,
       zera_s => '0',
       conta => conta_conterros,
-      Q => open,
-      fim => timeout_tsil,
+      Q => erros,
+      fim => open,
       meio => open
   );
 
-  nota <= s_dado when nota_src = '1' else s_nota_masc;
+  nota <= s_jogada when nota_src = '1' else s_nota_masc;
   db_endereco <= s_endereco;
   db_memoria  <= s_dado;
   db_jogada <= s_jogada;

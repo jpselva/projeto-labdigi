@@ -17,7 +17,7 @@ entity unidade_controle is
         zera_contjog        : out std_logic;
         conta_contjog       : out std_logic;
         zera_regnota        : out std_logic;
-        registra_nota       : out std_logic;
+        registra_regnota    : out std_logic;
         zera_regmasc        : out std_logic;
         registra_regmasc    : out std_logic;
         masc_dado           : out std_logic_vector(11 downto 0);
@@ -61,7 +61,7 @@ begin
         zera_contjog <= '0';
         conta_contjog <= '0';
         zera_regnota <= '0';
-        registra_nota <= '0';
+        registra_regnota <= '0';
         zera_regmasc <= '0';
         registra_regmasc <= '0';
         masc_dado <= "000000000000";
@@ -114,7 +114,7 @@ begin
                 end if;
 			
 			when registra =>
-				registra_nota <= '1';
+				registra_regnota <= '1';
 				Eprox <= comparacao;
 			
 			when comparacao => 
