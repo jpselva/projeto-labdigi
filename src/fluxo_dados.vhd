@@ -302,7 +302,7 @@ begin
       meio => open
   );
 
-  nota <= s_jogada when nota_src = '1' else s_nota_masc;
+  nota <= s_dado when nota_src = '1' else s_jogada;
   db_endereco <= s_endereco;
   db_memoria  <= s_dado;
   db_jogada <= s_jogada;
