@@ -7,6 +7,7 @@ entity unidade_controle is
         clock               : in std_logic; 
         reset               : in std_logic; 
         iniciar             : in std_logic;
+        iniciar_tradicional : in std_logic;
         jogada_feita        : in std_logic;
         jogada_correta      : in std_logic;
         fim_contjog         : in std_logic;
@@ -31,6 +32,8 @@ entity unidade_controle is
         zera_detec          : out std_logic;
         toca_nota           : out std_logic;
         pronto              : out std_logic;
+        randomiza_nota      : out std_logic;
+        reset_gera_nota     : out std_logic;
 
         -- debug
         db_estado           : out std_logic_vector(3 downto 0)
@@ -40,12 +43,12 @@ end entity;
 architecture fsm of unidade_controle is
     type t_estado is (inicial, preparacao, toca, espera, registra, 
                       comparacao, espera_errou, espera_acertou, errou_jogada, 
-                      acertou_jogada, espera_silencio, fim);
+                      acertou_jogada, espera_silencio, fim, randomizar);
     signal Eatual, Eprox : t_estado;
 begin
 
     -- memoria de estado
-    process (clock,reset)
+    process (clock, reset)
     begin
         if reset='1' then
             Eatual <= inicial;
@@ -58,23 +61,25 @@ begin
     control: process(Eatual, iniciar, jogada_feita, jogada_correta, fim_contjog,
                      timeout_tnota, timeout_tsil)
     begin
-        zera_contjog <= '0';
-        conta_contjog <= '0';
-        zera_regnota <= '0';
-        registra_regnota <= '0';
-        zera_regmasc <= '0';
-        registra_regmasc <= '0';
-        masc_dado <= "000000000000";
-        nota_src <= '0';
-        zera_conterros <= '0';
-        conta_conterros <= '0';
-        zera_tnota <= '0';
-        conta_tnota <= '0';
-        zera_tsil <= '0';
-        conta_tsil <= '0';
-        toca_nota <= '0';
-        pronto <= '0';
-        zera_detec <= '0';
+        zera_contjog      <= '0';
+        conta_contjog     <= '0';
+        zera_regnota      <= '0';
+        registra_regnota  <= '0';
+        zera_regmasc      <= '0';
+        registra_regmasc  <= '0';
+        masc_dado         <= "000000000000";
+        nota_src          <= '0';
+        zera_conterros    <= '0';
+        conta_conterros   <= '0';
+        zera_tnota        <= '0';
+        conta_tnota       <= '0';
+        zera_tsil         <= '0';
+        conta_tsil        <= '0';
+        toca_nota         <= '0';
+        pronto            <= '0';
+        zera_detec        <= '0';
+        randomiza_nota    <= '0';
+        reset_gera_nota   <= '0';
 
         case Eatual is
 
@@ -94,8 +99,18 @@ begin
                 zera_detec <= '1';
                 registra_regmasc <= '1';
                 masc_dado <= "000000000111";
+                reset_gera_nota <= '1';
                 
                 Eprox <= toca;
+
+            when randomizar =>
+                randomiza_nota <= '1';
+
+                if ( iniciar_tradicional = '1' ) then
+                    Eprox <= toca;
+                else
+                    Eprox <= randomizar;
+                end if;
 
             when toca =>
                 toca_nota <= '1';
@@ -110,6 +125,7 @@ begin
                 end if;
 
             when espera =>
+
                 if ( jogada_feita = '0' ) then
                     Eprox <= espera;
                 else

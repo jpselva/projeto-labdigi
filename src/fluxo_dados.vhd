@@ -22,8 +22,8 @@ entity fluxo_dados is
     conta_tnota         : in  std_logic;
     zera_tsil           : in  std_logic;
     conta_tsil          : in  std_logic;
-    reset_gera_nota      : in  std_logic;
-    para_de_gerar       : in  std_logic;
+    reset_gera_nota     : in  std_logic;
+    randomiza_nota      : in  std_logic;
     fim_contjog         : out std_logic;
     jogada_correta      : out std_logic;
     nota                : out std_logic_vector (11 downto 0);
@@ -84,7 +84,7 @@ architecture estrutural of fluxo_dados is
         clk             : in std_logic;
         reset           : in std_logic;
         mascara         : in std_logic_vector(11 downto 0);
-        para_de_gerar   : in std_logic;
+        randomiza_nota   : in std_logic;
         -- output
         nota            : out std_logic_vector(11 downto 0)
     );
@@ -127,11 +127,9 @@ architecture estrutural of fluxo_dados is
       );
   end component;
 begin
-
   -- sinais de controle ativos em alto
   -- sinais dos componentes ativos em baixo
-  
-  
+
   not_zera_contjog <= not zera_contjog;
   --zera_conterros <= not zera_conterros;
   --not_escreveM <= not escreveM;
@@ -144,8 +142,6 @@ begin
   jogada_correta <= s_jogada_correta(2) and s_jogada_correta(1) and s_jogada_correta(0);
   s_nota_masc <= s_mascara and chaves;
 
-
-
   ContJog: contador_163
     port map (
         clock => clock,
@@ -157,8 +153,6 @@ begin
         Q     => db_endereco,
         rco   => fim_contjog
     );
-
-
 
   CompJog1: comparador_85
     port map (
@@ -177,6 +171,7 @@ begin
         o_ALTB => open,
         o_AEQB => s_jogada_correta(0) 
     );
+
     CompJog2: comparador_85
     port map (
         i_A3   => s_nota_aleatoria(7),
@@ -194,6 +189,7 @@ begin
         o_ALTB => open,
         o_AEQB => s_jogada_correta(1) 
     );
+
     CompJog3: comparador_85
     port map (
         i_A3   => s_nota_aleatoria(11),
@@ -212,17 +208,12 @@ begin
         o_AEQB => s_jogada_correta(2)
     );
 	 
-
-  -- colocar gerador de notas
   NoteGen : note_generator
     port map(
-      -- inputs  
       clk => clock,
       reset => reset_gera_nota,
       mascara => s_mascara, 
-      para_de_gerar => para_de_gerar, 
-      -- output
-
+      randomiza_nota => randomiza_nota, 
       nota => s_nota_aleatoria
     );
 
@@ -271,7 +262,6 @@ begin
         fim => timeout_tnota,
         meio => open
     );
-
     
   TimerSilencio: contador_m
   generic map (

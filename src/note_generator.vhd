@@ -8,7 +8,7 @@ entity note_generator is
         clk             : in std_logic;
         reset           : in std_logic;
         mascara         : in std_logic_vector(11 downto 0);
-        para_de_gerar   : in std_logic;
+        randomiza_nota  : in std_logic;
         -- output
         nota            : out std_logic_vector(11 downto 0)
     );
@@ -118,5 +118,5 @@ begin
                        saida_decoder_masked(10) OR
                        saida_decoder_masked(11);
 
-    enable_reg <= nota_compativel AND (NOT para_de_gerar);
+    enable_reg <= nota_compativel AND randomiza_nota;
 end architecture;
