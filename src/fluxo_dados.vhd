@@ -22,6 +22,8 @@ entity fluxo_dados is
     conta_tnota         : in  std_logic;
     zera_tsil           : in  std_logic;
     conta_tsil          : in  std_logic;
+    reset_gera_nota      : in  std_logic;
+    para_de_gerar       : in  std_logic;
     fim_contjog         : out std_logic;
     jogada_correta      : out std_logic;
     nota                : out std_logic_vector (11 downto 0);
@@ -30,15 +32,14 @@ entity fluxo_dados is
     timeout_tnota       : out std_logic;
     timeout_tsil        : out std_logic;
     db_jogada           : out std_logic_vector (11 downto 0);
-    db_memoria          : out std_logic_vector (11 downto 0);
+    db_nota_aleatoria   : out std_logic_vector (11 downto 0);
     db_endereco         : out std_logic_vector (3  downto 0)
-  );
-end entity fluxo_dados;
+    );
+  end entity fluxo_dados;
 
 architecture estrutural of fluxo_dados is
-  signal s_dado           : std_logic_vector (11 downto 0); 
+  signal s_nota_aleatoria           : std_logic_vector (11 downto 0); 
   signal s_mascara        : std_logic_vector (11 downto 0);
-  signal s_endereco       : std_logic_vector (3 downto 0);
   signal s_chave_acionada : std_logic;
   signal s_jogada         : std_logic_vector (11 downto 0);
   signal not_zera_contjog : std_logic;
@@ -77,14 +78,15 @@ architecture estrutural of fluxo_dados is
     );
   end component;
 
-  component ram_16x12 is
+  component note_generator is
     port (
-      clk           : in std_logic;           
-      endereco      : in std_logic_vector (3 downto 0);
-      dado_entrada  : in std_logic_vector (11 downto 0);
-      we            : in std_logic;            -- we ativo em baixo
-      ce            : in std_logic; 
-      dado_saida    : out std_logic_vector (11 downto 0)
+        -- inputs
+        clk             : in std_logic;
+        reset           : in std_logic;
+        mascara         : in std_logic_vector(11 downto 0);
+        para_de_gerar   : in std_logic;
+        -- output
+        nota            : out std_logic_vector(11 downto 0)
     );
   end component;
 
@@ -152,22 +154,21 @@ begin
         ent   => '1',
         enp   => conta_contjog,
         D     => "0000",
-        Q     => s_endereco,
+        Q     => db_endereco,
         rco   => fim_contjog
     );
 
 
-  --------  REVER COMPONENTE  --------
 
   CompJog1: comparador_85
     port map (
-        i_A3   => s_dado(3),
+        i_A3   => s_nota_aleatoria(3),
         i_B3   => s_jogada(3),
-        i_A2   => s_dado(2),
+        i_A2   => s_nota_aleatoria(2),
         i_B2   => s_jogada(2),
-        i_A1   => s_dado(1),
+        i_A1   => s_nota_aleatoria(1),
         i_B1   => s_jogada(1),
-        i_A0   => s_dado(0),
+        i_A0   => s_nota_aleatoria(0),
         i_B0   => s_jogada(0),
         i_AGTB => '0',
         i_ALTB => '0',
@@ -178,13 +179,13 @@ begin
     );
     CompJog2: comparador_85
     port map (
-        i_A3   => s_dado(7),
+        i_A3   => s_nota_aleatoria(7),
         i_B3   => s_jogada(7),
-        i_A2   => s_dado(6),
+        i_A2   => s_nota_aleatoria(6),
         i_B2   => s_jogada(6),
-        i_A1   => s_dado(5),
+        i_A1   => s_nota_aleatoria(5),
         i_B1   => s_jogada(5),
-        i_A0   => s_dado(4),
+        i_A0   => s_nota_aleatoria(4),
         i_B0   => s_jogada(4),
         i_AGTB => '0',
         i_ALTB => '0',
@@ -195,13 +196,13 @@ begin
     );
     CompJog3: comparador_85
     port map (
-        i_A3   => s_dado(11),
+        i_A3   => s_nota_aleatoria(11),
         i_B3   => s_jogada(11),
-        i_A2   => s_dado(10),
+        i_A2   => s_nota_aleatoria(10),
         i_B2   => s_jogada(10),
-        i_A1   => s_dado(9),
+        i_A1   => s_nota_aleatoria(9),
         i_B1   => s_jogada(9),
-        i_A0   => s_dado(8),
+        i_A0   => s_nota_aleatoria(8),
         i_B0   => s_jogada(8),
         i_AGTB => '0',
         i_ALTB => '0',
@@ -212,19 +213,18 @@ begin
     );
 	 
 
-  --------  REVER COMPONENTE  --------
+  -- colocar gerador de notas
+  NoteGen : note_generator
+    port map(
+      -- inputs  
+      clk => clock,
+      reset => reset_gera_nota,
+      mascara => s_mascara, 
+      para_de_gerar => para_de_gerar, 
+      -- output
 
-  MemJog: entity work.ram_16x12 (ram_modelsim) -- usar arquitetura para ModelSim
-  -- MemJog: entity work.ram_16x4 (ram_mif)  -- usar esta linha para Intel Quartus
-    port map (
-       clk          => clock,
-       endereco     => s_endereco,
-       dado_entrada => "000000000000",
-       we           => '1', -- we ativo em baixo
-       ce           => '0',
-       dado_saida   => s_dado
+      nota => s_nota_aleatoria
     );
-
 
   RegNota: registrador_n
     generic map (
@@ -301,9 +301,8 @@ begin
       meio => open
   );
 
-  nota <= s_dado when nota_src = '1' else s_jogada;
-  db_endereco <= s_endereco;
-  db_memoria  <= s_dado;
+  nota <= s_nota_aleatoria when nota_src = '1' else s_jogada;
+  db_nota_aleatoria  <= s_nota_aleatoria;
   db_jogada <= s_jogada;
 
 end architecture estrutural;

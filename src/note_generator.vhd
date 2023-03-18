@@ -6,7 +6,6 @@ entity note_generator is
     port (
         -- inputs
         clk             : in std_logic;
-        gera            : in std_logic; 
         reset           : in std_logic;
         mascara         : in std_logic_vector(11 downto 0);
         para_de_gerar   : in std_logic;
