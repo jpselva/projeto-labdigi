@@ -45,7 +45,6 @@ architecture estrutural of fluxo_dados is
   signal s_nota_masc      : std_logic_vector (11 downto 0);
   signal s_jogada_correta : std_logic_vector (2 downto 0);
 
-
   component contador_163
     port (
         clock : in  std_logic;
@@ -261,7 +260,7 @@ begin
 
   TimerNota: contador_m
     generic map (
-        M => 1000
+        M => 1000 -- divide by 100 when running testbenches
     )
     port map (
         clock => clock,
@@ -276,7 +275,7 @@ begin
     
   TimerSilencio: contador_m
   generic map (
-      M => 500
+      M => 500 -- divide by 100 when running testbenches
   )
   port map (
       clock => clock,

@@ -5,31 +5,31 @@
 --! @date 2022-05-28
 -------------------------------------------------------
 library ieee;
-use ieee.numeric_bit.all;
+use ieee.std_logic_1164.all;
 
 entity shift_register is
     generic (
         word_s : natural := 64
     );
     port (
-        write_word    : in bit_vector(word_s-1 downto 0);
-        right_serial  : in bit; -- serial input for srl
-        left_serial   : in bit; -- serial input for sll
-        clear         : in bit; -- async reset
-        clk           : in bit;
+        write_word    : in std_logic_vector(word_s-1 downto 0);
+        right_serial  : in std_logic; -- serial input for srl
+        left_serial   : in std_logic; -- serial input for sll
+        clear         : in std_logic; -- async reset
+        clk           : in std_logic;
 
         -- input mode selector (same as 74194)
-        selector      : in bit_vector(1 downto 0); 
+        selector      : in std_logic_vector(1 downto 0); 
 
-        read_word     : out bit_vector(word_s-1 downto 0)
+        read_word     : out std_logic_vector(word_s-1 downto 0)
     );
 end entity;
 
 architecture registers of shift_register is
-    constant ZERO : bit_vector(word_s-1 downto 0) := (others => '0');
+    constant ZERO : std_logic_vector(word_s-1 downto 0) := (others => '0');
 
-    signal value      : bit_vector (word_s-1 downto 0);
-    signal next_value : bit_vector (word_s-1 downto 0); -- written to value in next clk edge
+    signal value      : std_logic_vector (word_s-1 downto 0);
+    signal next_value : std_logic_vector (word_s-1 downto 0); -- written to value in next clk edge
 begin
     read_word <= value;
 

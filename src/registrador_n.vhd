@@ -27,15 +27,18 @@
 --     09/09/2021  1.3     Edson Midorikawa  revisao 
 --     03/09/2022  1.4     Edson Midorikawa  revisao do codigo
 --     20/01/2023  1.4.1   Edson Midorikawa  revisao do codigo
+--     18/03/2023  1.5     Joao Pedro Selva  adicao de reset_value
 -------------------------------------------------------------------------
 --
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity registrador_n is
     generic (
-        constant N: integer := 8 
+        constant N : integer := 8;
+        constant reset_value : integer := 0
     );
     port (
         clock  : in  std_logic;
@@ -52,7 +55,8 @@ begin
 
 process(clock, clear, enable, IQ)
     begin
-        if (clear = '1') then IQ <= (others => '0');
+        if (clear = '1') then IQ <= 
+            std_logic_vector(to_unsigned(reset_value, IQ'length));
         elsif (clock'event and clock='1') then
             if (enable='1') then IQ <= D; 
             else IQ <= IQ;
