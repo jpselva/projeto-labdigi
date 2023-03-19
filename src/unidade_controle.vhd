@@ -59,7 +59,7 @@ begin
 
     -- logica de proximo estado
     control: process(Eatual, iniciar, jogada_feita, jogada_correta, fim_contjog,
-                     timeout_tnota, timeout_tsil)
+                     timeout_tnota, timeout_tsil, iniciar_tradicional)
     begin
         zera_contjog      <= '0';
         conta_contjog     <= '0';
@@ -101,7 +101,7 @@ begin
                 masc_dado <= "000000000111";
                 reset_gera_nota <= '1';
                 
-                Eprox <= toca;
+                Eprox <= randomizar;
 
             when randomizar =>
                 randomiza_nota <= '1';
@@ -206,6 +206,7 @@ begin
     with Eatual select
         db_estado <= "0000" when inicial,         -- 0
                      "0001" when preparacao,      -- 1
+                     "0010" when randomizar,      -- 2
                      "0011" when registra,        -- 3
                      "0100" when comparacao,      -- 4
                      "0101" when errou_jogada,    -- 5

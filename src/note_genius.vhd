@@ -10,6 +10,7 @@ entity note_genius is
         reset   : in std_logic;
         iniciar : in std_logic;
         chaves  : in std_logic_vector (11 downto 0);
+        iniciar_tradicional : in std_logic;
 
         -- outputs
         toca_nota : out std_logic;
@@ -18,10 +19,13 @@ entity note_genius is
         pronto    : out std_logic;
 
         -- debug
-        db_estado           : out std_logic_vector (6 downto 0);
-        db_jogada           : out std_logic_vector (6 downto 0);
-        db_memoria          : out std_logic_vector (6 downto 0);
-        db_endereco         : out std_logic_vector (6 downto 0)
+        db_estado         : out std_logic_vector (6 downto 0);
+        db_jogada         : out std_logic_vector (6 downto 0);
+        db_nota_aleatoria : out std_logic_vector (6 downto 0);
+        db_rodada         : out std_logic_vector (6 downto 0);
+
+        -- simulacao
+        tb_nota_aleatoria_raw     : out std_logic_vector (11 downto 0)
     );
 end entity;
 
@@ -42,14 +46,15 @@ architecture arch of note_genius is
 
     component unidade_controle is 
         port ( 
-            clock               : in std_logic; 
-            reset               : in std_logic; 
-            iniciar             : in std_logic;
-            jogada_feita        : in std_logic;
-            jogada_correta      : in std_logic;
-            fim_contjog         : in std_logic;
-            timeout_tnota       : in std_logic;
-            timeout_tsil        : in std_logic;
+            clock               : in  std_logic; 
+            reset               : in  std_logic; 
+            iniciar             : in  std_logic;
+            iniciar_tradicional : in  std_logic;
+            jogada_feita        : in  std_logic;
+            jogada_correta      : in  std_logic;
+            fim_contjog         : in  std_logic;
+            timeout_tnota       : in  std_logic;
+            timeout_tsil        : in  std_logic;
             zera_contjog        : out std_logic;
             conta_contjog       : out std_logic;
             zera_regnota        : out std_logic;
@@ -67,6 +72,8 @@ architecture arch of note_genius is
             zera_detec          : out std_logic;
             toca_nota           : out std_logic;
             pronto              : out std_logic;
+            randomiza_nota      : out std_logic;
+            reset_gera_nota     : out std_logic;
             db_estado           : out std_logic_vector(3 downto 0)
         );
     end component;
@@ -90,48 +97,52 @@ architecture arch of note_genius is
         conta_tnota         : in  std_logic;
         zera_tsil           : in  std_logic;
         conta_tsil          : in  std_logic;
+        reset_gera_nota     : in  std_logic;
+        randomiza_nota      : in  std_logic;
         fim_contjog         : out std_logic;
         jogada_correta      : out std_logic;
         nota                : out std_logic_vector (11 downto 0);
-        erros               : out std_logic_vector (6 downto 0);
+        erros               : out std_logic_vector (6  downto 0);
         jogada_feita        : out std_logic;
         timeout_tnota       : out std_logic;
         timeout_tsil        : out std_logic;
         db_jogada           : out std_logic_vector (11 downto 0);
-        db_memoria          : out std_logic_vector (11 downto 0);
-        db_endereco         : out std_logic_vector (3 downto 0)
+        db_nota_aleatoria   : out std_logic_vector (11 downto 0);
+        db_rodada           : out std_logic_vector (3  downto 0)
       );
     end component;
     
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
-    signal s_jogada_feita     : std_logic;
-    signal s_jogada_correta   : std_logic;
-    signal s_fim_contjog      : std_logic;
-    signal s_timeout_tnota    : std_logic;
-    signal s_timeout_tsil     : std_logic;
-    signal s_zera_contjog     : std_logic;
-    signal s_conta_contjog    : std_logic;
-    signal s_zera_regnota     : std_logic;
-    signal s_registra_regnota : std_logic;
-    signal s_zera_regmasc     : std_logic;
-    signal s_registra_regmasc : std_logic;
-    signal s_masc_dado        : std_logic_vector (11 downto 0);
-    signal s_nota_src         : std_logic;
-    signal s_zera_conterros   : std_logic;
-    signal s_conta_conterros  : std_logic;
-    signal s_zera_tnota       : std_logic;
-    signal s_conta_tnota      : std_logic;
-    signal s_zera_tsil        : std_logic;
-    signal s_conta_tsil       : std_logic;
-    signal s_zera_detec       : std_logic;
-    signal s_nota             : std_logic_vector (11 downto 0);
-    signal s_erros            : std_logic_vector (6 downto 0);
-    signal s_db_jogada        : std_logic_vector (11 downto 0);
-    signal s_db_memoria       : std_logic_vector (11 downto 0);
-    signal s_db_endereco      : std_logic_vector (3 downto 0);
-    signal s_db_estado        : std_logic_vector (3 downto 0);
+    signal s_jogada_feita      : std_logic;
+    signal s_jogada_correta    : std_logic;
+    signal s_fim_contjog       : std_logic;
+    signal s_timeout_tnota     : std_logic;
+    signal s_timeout_tsil      : std_logic;
+    signal s_zera_contjog      : std_logic;
+    signal s_conta_contjog     : std_logic;
+    signal s_zera_regnota      : std_logic;
+    signal s_registra_regnota  : std_logic;
+    signal s_zera_regmasc      : std_logic;
+    signal s_registra_regmasc  : std_logic;
+    signal s_masc_dado         : std_logic_vector (11 downto 0);
+    signal s_nota_src          : std_logic;
+    signal s_zera_conterros    : std_logic;
+    signal s_conta_conterros   : std_logic;
+    signal s_zera_tnota        : std_logic;
+    signal s_conta_tnota       : std_logic;
+    signal s_zera_tsil         : std_logic;
+    signal s_conta_tsil        : std_logic;
+    signal s_zera_detec        : std_logic;
+    signal s_randomiza_nota    : std_logic;
+    signal s_reset_gera_nota   : std_logic;
+    signal s_db_nota_aleatoria : std_logic_vector (11 downto 0);
+    signal s_nota              : std_logic_vector (11 downto 0);
+    signal s_erros             : std_logic_vector (6 downto 0);
+    signal s_db_jogada         : std_logic_vector (11 downto 0);
+    signal s_db_rodada       : std_logic_vector (3 downto 0);
+    signal s_db_estado         : std_logic_vector (3 downto 0);
 
     ---------------------------------------------
     -- other signals
@@ -139,9 +150,9 @@ architecture arch of note_genius is
     -- signals padded with zeros in front
     signal s_erros_pad : std_logic_vector (7 downto 0);
     signal s_db_jogada_pad : std_logic_vector(15 downto 0);
-    signal s_db_memoria_pad : std_logic_vector(15 downto 0);
+    signal s_db_nota_aleatoria_pad : std_logic_vector(15 downto 0);
 
-    signal s_db_memoria_enc : std_logic_vector (3 downto 0);
+    signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
     signal s_db_jogada_enc : std_logic_vector (3 downto 0);
 begin
     UC: unidade_controle
@@ -149,6 +160,7 @@ begin
         clock => clock,
         reset => reset,
         iniciar => iniciar,
+        iniciar_tradicional => iniciar_tradicional,
         jogada_feita => s_jogada_feita,
         jogada_correta => s_jogada_correta,
         fim_contjog => s_fim_contjog,
@@ -171,6 +183,8 @@ begin
         zera_detec => s_zera_detec,
         toca_nota => toca_nota,
         pronto => pronto,
+        randomiza_nota => s_randomiza_nota,
+        reset_gera_nota => s_reset_gera_nota,
         db_estado => s_db_estado
      );
 
@@ -193,6 +207,8 @@ begin
         conta_tnota => s_conta_tnota,
         zera_tsil => s_zera_tsil,
         conta_tsil => s_conta_tsil,
+        reset_gera_nota => s_reset_gera_nota,
+        randomiza_nota => s_randomiza_nota,
         fim_contjog => s_fim_contjog,
         jogada_correta => s_jogada_correta,
         nota => s_nota,
@@ -201,13 +217,13 @@ begin
         timeout_tnota => s_timeout_tnota,
         timeout_tsil => s_timeout_tsil,
         db_jogada => s_db_jogada,
-        db_memoria => s_db_memoria,
-        db_endereco => s_db_endereco
+        db_nota_aleatoria => s_db_nota_aleatoria,
+        db_rodada => s_db_rodada
       );
 
     s_erros_pad <= "0"&s_erros;
     s_db_jogada_pad <= "0000"&s_db_jogada;
-    s_db_memoria_pad <= "0000"&s_db_memoria;
+    s_db_nota_aleatoria_pad <= "0000"&s_db_nota_aleatoria;
     nota <= s_nota;    
 
     HEX_ESTADO: hexa7seg
@@ -218,8 +234,8 @@ begin
 
     HEX_ENDERECO: hexa7seg
     port map(
-      hexa => s_db_endereco,
-      sseg => db_endereco
+      hexa => s_db_rodada,
+      sseg => db_rodada
     );
 
     HEX_ERROS1: hexa7seg -- Lower 4 bits
@@ -242,8 +258,8 @@ begin
 
     ENC_MEM: encoder16x4         
     port map (
-        I => s_db_memoria_pad,
-        O => s_db_memoria_enc
+        I => s_db_nota_aleatoria_pad,
+        O => s_db_nota_aleatoria_enc
     );
 
     HEX_JOG: hexa7seg
@@ -254,8 +270,9 @@ begin
 
     HEX_MEM: hexa7seg
     port map (
-      hexa => s_db_memoria_enc, 
-      sseg => db_memoria
+      hexa => s_db_nota_aleatoria_enc, 
+      sseg => db_nota_aleatoria
     );
 
+    tb_nota_aleatoria_raw <= s_db_nota_aleatoria;
 end architecture;

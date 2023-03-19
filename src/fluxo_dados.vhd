@@ -26,6 +26,7 @@ entity fluxo_dados is
     randomiza_nota      : in  std_logic;
     fim_contjog         : out std_logic;
     jogada_correta      : out std_logic;
+    -- 'nota' eh a nota a ser tocada pelos buzzers
     nota                : out std_logic_vector (11 downto 0);
     erros               : out std_logic_vector (6  downto 0);
     jogada_feita        : out std_logic;
@@ -33,7 +34,7 @@ entity fluxo_dados is
     timeout_tsil        : out std_logic;
     db_jogada           : out std_logic_vector (11 downto 0);
     db_nota_aleatoria   : out std_logic_vector (11 downto 0);
-    db_endereco         : out std_logic_vector (3  downto 0)
+    db_rodada           : out std_logic_vector (3  downto 0)
     );
   end entity fluxo_dados;
 
@@ -150,7 +151,7 @@ begin
         ent   => '1',
         enp   => conta_contjog,
         D     => "0000",
-        Q     => db_endereco,
+        Q     => db_rodada,
         rco   => fim_contjog
     );
 
@@ -251,7 +252,7 @@ begin
 
   TimerNota: contador_m
     generic map (
-        M => 1000 -- divide by 100 when running testbenches
+        M => 10 -- divide by 100 when running testbenches
     )
     port map (
         clock => clock,
@@ -265,7 +266,7 @@ begin
     
   TimerSilencio: contador_m
   generic map (
-      M => 500 -- divide by 100 when running testbenches
+      M => 5 -- divide by 100 when running testbenches
   )
   port map (
       clock => clock,

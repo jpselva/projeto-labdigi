@@ -35,8 +35,8 @@ architecture arch of note_generator is
     
     component decoder4x16 is
         port (
-            I : std_logic_vector(3 downto 0);
-            O : std_logic_vector(15 downto 0)
+            I : in std_logic_vector(3 downto 0);
+            O : out std_logic_vector(15 downto 0)
         );
     end component;
 
@@ -93,15 +93,15 @@ begin
         )
         port map (
             clock => clk,
-            clear => '0',
+            clear => reset,
             enable => enable_reg,
             D => saida_decoder(11 downto 0),
             Q => nota
         );
 
-    s_right_serial <= s_write_word(10) XOR s_write_word(12) XOR 
-                      s_write_word(13) XOR s_write_word(15);
-    s_selector <= '1' & reset;          -- always shift right, load when reset = 1
+    s_right_serial <= saida_lfsr(10) XOR saida_lfsr(12) XOR 
+                      saida_lfsr(13) XOR saida_lfsr(15);
+    s_selector <= reset&'1';            -- always shift right, load when reset = 1
     s_write_word <= "0011001100110011"; -- super random secret seed ;)
     saida_decoder_masked <= saida_decoder(11 downto 0) AND mascara;
 
