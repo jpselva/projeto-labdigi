@@ -94,11 +94,11 @@ begin
         wait for 2*TbPeriod;
 
         -- get all notes right
-        for i in 0 to memoria'length-1 loop
-            if ( memoria(i)(0) = '1' ) then
+        for i in 0 to 15 loop
+            if ( tb_nota_aleatoria_raw(0) = '1' ) then
                 chaves <= "000000000000";
                 wait for 20*TbPeriod;
-                chaves <= memoria(i);
+                chaves <= tb_nota_aleatoria_raw;
                 wait for 20*TbPeriod;
             else 
                 chaves <= "000000000000";
@@ -107,7 +107,7 @@ begin
                 wait for 20*TbPeriod;
                 chaves <= "000000000000";
                 wait for 20*TbPeriod;
-                chaves <= memoria(i); -- get it right now
+                chaves <= tb_nota_aleatoria_raw; -- get it right now
                 wait for 20*TbPeriod;
             end if;
         end loop;
