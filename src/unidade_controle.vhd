@@ -150,6 +150,7 @@ begin
             when espera_acertou =>
                 toca_nota <= '1';
                 conta_tnota <= '1';
+                randomiza_nota <= '1';
 
                 if ( timeout_tnota = '0' ) then
                     Eprox <= espera_acertou;

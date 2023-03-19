@@ -59,7 +59,8 @@ begin
               db_jogada   => db_jogada,
               db_rodada   => db_rodada,
               iniciar_tradicional => iniciar_tradicional,
-              db_nota_aleatoria   => db_nota_aleatoria);
+              db_nota_aleatoria   => db_nota_aleatoria,
+              tb_nota_aleatoria_raw => tb_nota_aleatoria_raw);
 
     -- Clock generation
     TbClock <= not TbClock after TbPeriod/2 when TbSimEnded /= '1' else '0';

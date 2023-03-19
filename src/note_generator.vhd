@@ -99,8 +99,8 @@ begin
             Q => nota
         );
 
-    s_right_serial <= saida_lfsr(10) XOR saida_lfsr(12) XOR 
-                      saida_lfsr(13) XOR saida_lfsr(15);
+    s_right_serial <= saida_lfsr(10) XOR (saida_lfsr(12) XOR 
+                      (saida_lfsr(13) XOR saida_lfsr(15)));
     s_selector <= reset&'1';            -- always shift right, load when reset = 1
     s_write_word <= "0011001100110011"; -- super random secret seed ;)
     saida_decoder_masked <= saida_decoder(11 downto 0) AND mascara;
