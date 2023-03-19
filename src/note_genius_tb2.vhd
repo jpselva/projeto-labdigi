@@ -1,10 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity note_genius_tb1 is
-end note_genius_tb1;
+entity note_genius_tb2 is
+end note_genius_tb2;
 
-architecture tb of note_genius_tb1 is
+architecture tb of note_genius_tb2 is
 
     component note_genius is
         port (
