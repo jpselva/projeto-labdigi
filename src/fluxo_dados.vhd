@@ -252,7 +252,7 @@ begin
 
   TimerNota: contador_m
     generic map (
-        M => 10 -- divide by 100 when running testbenches
+        M => 1000 -- divide by 100 when running testbenches
     )
     port map (
         clock => clock,
@@ -266,7 +266,7 @@ begin
     
   TimerSilencio: contador_m
   generic map (
-      M => 5 -- divide by 100 when running testbenches
+      M => 500 -- divide by 100 when running testbenches
   )
   port map (
       clock => clock,
