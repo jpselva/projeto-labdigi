@@ -43,7 +43,7 @@ end entity;
 architecture fsm of unidade_controle is
     type t_estado is (inicial, preparacao, toca, espera, registra, 
                       comparacao, espera_errou, espera_acertou, errou_jogada, 
-                      acertou_jogada, espera_silencio, fim, randomizar);
+                      acertou_jogada, espera_silencio, fim, seleciona_modo);
     signal Eatual, Eprox : t_estado;
 begin
 
@@ -101,15 +101,15 @@ begin
                 masc_dado <= "000000000111";
                 reset_gera_nota <= '1';
                 
-                Eprox <= randomizar;
+                Eprox <= seleciona_modo;
 
-            when randomizar =>
+            when seleciona_modo =>
                 randomiza_nota <= '1';
 
                 if ( iniciar_tradicional = '1' ) then
                     Eprox <= toca;
                 else
-                    Eprox <= randomizar;
+                    Eprox <= seleciona_modo;
                 end if;
 
             when toca =>
@@ -207,7 +207,7 @@ begin
     with Eatual select
         db_estado <= "0000" when inicial,         -- 0
                      "0001" when preparacao,      -- 1
-                     "0010" when randomizar,      -- 2
+                     "0010" when seleciona_modo,  -- 2
                      "0011" when registra,        -- 3
                      "0100" when comparacao,      -- 4
                      "0101" when errou_jogada,    -- 5
