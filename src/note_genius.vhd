@@ -6,23 +6,25 @@ use ieee.math_real.all;
 entity note_genius is
     port (
         -- inputs
-        clock   : in std_logic;
-        reset   : in std_logic;
-        iniciar : in std_logic;
-        chaves  : in std_logic_vector (11 downto 0);
+        clock               : in std_logic;
+        clock_nota          : in std_logic;
+        reset               : in std_logic;
+        iniciar             : in std_logic;
+        chaves              : in std_logic_vector (11 downto 0);
         iniciar_tradicional : in std_logic;
 
         -- outputs
-        toca_nota : out std_logic;
-        nota      : out std_logic_vector (11 downto 0);
-        erros     : out std_logic_vector (13 downto 0);
-        pronto    : out std_logic;
+        erros        : out std_logic_vector (13 downto 0);
+        pronto       : out std_logic;
+        sinal_buzzer : out std_logic;
 
         -- debug
         db_estado         : out std_logic_vector (6 downto 0);
         db_jogada         : out std_logic_vector (6 downto 0);
         db_nota_aleatoria : out std_logic_vector (6 downto 0);
         db_rodada         : out std_logic_vector (6 downto 0);
+        db_toca_nota      : out std_logic;
+        db_nota           : out std_logic_vector (11 downto 0);
 
         -- simulacao
         tb_nota_aleatoria_raw     : out std_logic_vector (11 downto 0)
@@ -111,7 +113,16 @@ architecture arch of note_genius is
         db_rodada           : out std_logic_vector (3  downto 0)
       );
     end component;
-    
+
+    component gerador_freq is
+      port (
+            clock 		: in  std_logic;
+            nota 		  : in  std_logic_vector(11 downto 0);
+            toca_nota : in std_logic;
+            saida 		: out std_logic
+        );
+    end component;
+
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
@@ -141,8 +152,9 @@ architecture arch of note_genius is
     signal s_nota              : std_logic_vector (11 downto 0);
     signal s_erros             : std_logic_vector (6 downto 0);
     signal s_db_jogada         : std_logic_vector (11 downto 0);
-    signal s_db_rodada       : std_logic_vector (3 downto 0);
+    signal s_db_rodada         : std_logic_vector (3 downto 0);
     signal s_db_estado         : std_logic_vector (3 downto 0);
+    signal s_toca_nota         : std_logic;
 
     ---------------------------------------------
     -- other signals
@@ -181,7 +193,7 @@ begin
         zera_tsil => s_zera_tsil,
         conta_tsil => s_conta_tsil,
         zera_detec => s_zera_detec,
-        toca_nota => toca_nota,
+        toca_nota => s_toca_nota,
         pronto => pronto,
         randomiza_nota => s_randomiza_nota,
         reset_gera_nota => s_reset_gera_nota,
@@ -221,10 +233,17 @@ begin
         db_rodada => s_db_rodada
       );
 
+    GERFREQ: gerador_freq
+      port map (
+        clock => clock_nota,
+        nota => s_nota,
+        toca_nota => s_toca_nota,
+        saida => sinal_buzzer
+      );
+
     s_erros_pad <= "0"&s_erros;
     s_db_jogada_pad <= "0000"&s_db_jogada;
     s_db_nota_aleatoria_pad <= "0000"&s_db_nota_aleatoria;
-    nota <= s_nota;    
 
     HEX_ESTADO: hexa7seg
     port map(
@@ -275,4 +294,6 @@ begin
     );
 
     tb_nota_aleatoria_raw <= s_db_nota_aleatoria;
+    db_nota <= s_nota;
+    db_toca_nota <= s_toca_nota;
 end architecture;
