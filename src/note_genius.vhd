@@ -7,7 +7,6 @@ entity note_genius is
     port (
         -- inputs
         clock               : in std_logic;
-        clock_nota          : in std_logic;
         reset               : in std_logic;
         iniciar             : in std_logic;
         chaves              : in std_logic_vector (11 downto 0);
@@ -81,45 +80,60 @@ architecture arch of note_genius is
     end component;
 
     component fluxo_dados is
-      port (
-        clock               : in  std_logic;
-        zera_contjog        : in  std_logic;
-        conta_contjog       : in  std_logic;
-        zera_regnota        : in  std_logic;
-        registra_regnota    : in  std_logic;
-        chaves              : in  std_logic_vector (11 downto 0);
-        zera_regmasc        : in  std_logic;
-        registra_regmasc    : in  std_logic;
-        masc_dado           : in  std_logic_vector (11 downto 0);
-        nota_src            : in  std_logic;
-        zera_conterros      : in  std_logic;
-        conta_conterros     : in  std_logic;
-        zera_detec          : in  std_logic;
-        zera_tnota          : in  std_logic;
-        conta_tnota         : in  std_logic;
-        zera_tsil           : in  std_logic;
-        conta_tsil          : in  std_logic;
-        reset_gera_nota     : in  std_logic;
-        randomiza_nota      : in  std_logic;
-        fim_contjog         : out std_logic;
-        jogada_correta      : out std_logic;
-        nota                : out std_logic_vector (11 downto 0);
-        erros               : out std_logic_vector (6  downto 0);
-        jogada_feita        : out std_logic;
-        timeout_tnota       : out std_logic;
-        timeout_tsil        : out std_logic;
-        db_jogada           : out std_logic_vector (11 downto 0);
-        db_nota_aleatoria   : out std_logic_vector (11 downto 0);
-        db_rodada           : out std_logic_vector (3  downto 0)
-      );
+        port (
+            clock               : in  std_logic;
+            zera_contjog        : in  std_logic;
+            conta_contjog       : in  std_logic;
+            zera_regnota        : in  std_logic;
+            registra_regnota    : in  std_logic;
+            chaves              : in  std_logic_vector (11 downto 0);
+            zera_regmasc        : in  std_logic;
+            registra_regmasc    : in  std_logic;
+            masc_dado           : in  std_logic_vector (11 downto 0);
+            nota_src            : in  std_logic;
+            zera_conterros      : in  std_logic;
+            conta_conterros     : in  std_logic;
+            zera_detec          : in  std_logic;
+            zera_tnota          : in  std_logic;
+            conta_tnota         : in  std_logic;
+            zera_tsil           : in  std_logic;
+            conta_tsil          : in  std_logic;
+            reset_gera_nota     : in  std_logic;
+            randomiza_nota      : in  std_logic;
+            fim_contjog         : out std_logic;
+            jogada_correta      : out std_logic;
+            nota                : out std_logic_vector (11 downto 0);
+            erros               : out std_logic_vector (6  downto 0);
+            jogada_feita        : out std_logic;
+            timeout_tnota       : out std_logic;
+            timeout_tsil        : out std_logic;
+            db_jogada           : out std_logic_vector (11 downto 0);
+            db_nota_aleatoria   : out std_logic_vector (11 downto 0);
+            db_rodada           : out std_logic_vector (3  downto 0)
+        );
     end component;
 
     component gerador_freq is
       port (
             clock 		: in  std_logic;
-            nota 		  : in  std_logic_vector(11 downto 0);
-            toca_nota : in std_logic;
+            nota 	    : in  std_logic_vector(11 downto 0);
+            toca_nota   : in std_logic;
             saida 		: out std_logic
+        );
+    end component;
+
+    component contador_m_maior is
+        generic (
+            constant M: integer := 100 -- modulo do contador
+        );
+        port (
+            clock   : in  std_logic;
+            zera_as : in  std_logic;
+            zera_s  : in  std_logic;
+            conta   : in  std_logic;
+            Q       : out std_logic_vector(natural(ceil(log2(real(M))))-1 downto 0);
+            fim     : out std_logic;
+            meio    : out std_logic
         );
     end component;
 
@@ -155,6 +169,7 @@ architecture arch of note_genius is
     signal s_db_rodada         : std_logic_vector (3 downto 0);
     signal s_db_estado         : std_logic_vector (3 downto 0);
     signal s_toca_nota         : std_logic;
+    signal clk1khz             : std_logic; -- clock corrected to 1khz
 
     ---------------------------------------------
     -- other signals
@@ -164,12 +179,28 @@ architecture arch of note_genius is
     signal s_db_jogada_pad : std_logic_vector(15 downto 0);
     signal s_db_nota_aleatoria_pad : std_logic_vector(15 downto 0);
 
+    -- signals that come from encoders
     signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
     signal s_db_jogada_enc : std_logic_vector (3 downto 0);
 begin
-    UC: unidade_controle
-      port map (
+    -- clock divider
+    CLKDIV: contador_m_maior
+    generic map (
+        M => 50000 -- generate 1khz clock
+    )
+    port map (
         clock => clock,
+        zera_as => '0', 
+        zera_s => '0',
+        conta => '1',
+        Q => open,
+        fim => open,
+        meio => clk1khz
+    );
+
+    UC: unidade_controle
+    port map (
+        clock => clk1khz,
         reset => reset,
         iniciar => iniciar,
         iniciar_tradicional => iniciar_tradicional,
@@ -198,11 +229,11 @@ begin
         randomiza_nota => s_randomiza_nota,
         reset_gera_nota => s_reset_gera_nota,
         db_estado => s_db_estado
-     );
+    );
 
     DF: fluxo_dados
-      port map (
-        clock => clock,
+    port map (
+        clock => clk1khz,
         zera_contjog => s_zera_contjog,
         conta_contjog => s_conta_contjog,
         zera_regnota => s_zera_regnota,
@@ -231,11 +262,11 @@ begin
         db_jogada => s_db_jogada,
         db_nota_aleatoria => s_db_nota_aleatoria,
         db_rodada => s_db_rodada
-      );
+    );
 
     GERFREQ: gerador_freq
       port map (
-        clock => clock_nota,
+        clock => clock,
         nota => s_nota,
         toca_nota => s_toca_nota,
         saida => sinal_buzzer
