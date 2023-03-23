@@ -1,5 +1,5 @@
 /*
 !.gitignore
 !/src
-!/builds
-!/extras
+!/quartus
+!/wiring
