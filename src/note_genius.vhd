@@ -81,45 +81,45 @@ architecture arch of note_genius is
     end component;
 
     component fluxo_dados is
-      port (
-        clock               : in  std_logic;
-        zera_contjog        : in  std_logic;
-        conta_contjog       : in  std_logic;
-        zera_regnota        : in  std_logic;
-        registra_regnota    : in  std_logic;
-        chaves              : in  std_logic_vector (11 downto 0);
-        zera_regmasc        : in  std_logic;
-        registra_regmasc    : in  std_logic;
-        masc_dado           : in  std_logic_vector (11 downto 0);
-        nota_src            : in  std_logic;
-        zera_conterros      : in  std_logic;
-        conta_conterros     : in  std_logic;
-        zera_detec          : in  std_logic;
-        zera_tnota          : in  std_logic;
-        conta_tnota         : in  std_logic;
-        zera_tsil           : in  std_logic;
-        conta_tsil          : in  std_logic;
-        reset_gera_nota     : in  std_logic;
-        randomiza_nota      : in  std_logic;
-        fim_contjog         : out std_logic;
-        jogada_correta      : out std_logic;
-        nota                : out std_logic_vector (11 downto 0);
-        erros               : out std_logic_vector (6  downto 0);
-        jogada_feita        : out std_logic;
-        timeout_tnota       : out std_logic;
-        timeout_tsil        : out std_logic;
-        db_jogada           : out std_logic_vector (11 downto 0);
-        db_nota_aleatoria   : out std_logic_vector (11 downto 0);
-        db_rodada           : out std_logic_vector (3  downto 0)
-      );
+        port (
+            clock               : in  std_logic;
+            zera_contjog        : in  std_logic;
+            conta_contjog       : in  std_logic;
+            zera_regnota        : in  std_logic;
+            registra_regnota    : in  std_logic;
+            chaves              : in  std_logic_vector (11 downto 0);
+            zera_regmasc        : in  std_logic;
+            registra_regmasc    : in  std_logic;
+            masc_dado           : in  std_logic_vector (11 downto 0);
+            nota_src            : in  std_logic;
+            zera_conterros      : in  std_logic;
+            conta_conterros     : in  std_logic;
+            zera_detec          : in  std_logic;
+            zera_tnota          : in  std_logic;
+            conta_tnota         : in  std_logic;
+            zera_tsil           : in  std_logic;
+            conta_tsil          : in  std_logic;
+            reset_gera_nota     : in  std_logic;
+            randomiza_nota      : in  std_logic;
+            fim_contjog         : out std_logic;
+            jogada_correta      : out std_logic;
+            nota                : out std_logic_vector (11 downto 0);
+            erros               : out std_logic_vector (6  downto 0);
+            jogada_feita        : out std_logic;
+            timeout_tnota       : out std_logic;
+            timeout_tsil        : out std_logic;
+            db_jogada           : out std_logic_vector (11 downto 0);
+            db_nota_aleatoria   : out std_logic_vector (11 downto 0);
+            db_rodada           : out std_logic_vector (3  downto 0)
+        );
     end component;
 
     component gerador_freq is
-      port (
-            clock 		: in  std_logic;
-            nota 		  : in  std_logic_vector(11 downto 0);
+        port (
+            clock     : in  std_logic;
+            nota 	  : in  std_logic_vector(11 downto 0);
             toca_nota : in std_logic;
-            saida 		: out std_logic
+            saida 	  : out std_logic
         );
     end component;
 
@@ -160,15 +160,15 @@ architecture arch of note_genius is
     -- other signals
     ---------------------------------------------
     -- signals padded with zeros in front
-    signal s_erros_pad : std_logic_vector (7 downto 0);
-    signal s_db_jogada_pad : std_logic_vector(15 downto 0);
+    signal s_erros_pad             : std_logic_vector (7 downto 0);
+    signal s_db_jogada_pad         : std_logic_vector(15 downto 0);
     signal s_db_nota_aleatoria_pad : std_logic_vector(15 downto 0);
 
     signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
-    signal s_db_jogada_enc : std_logic_vector (3 downto 0);
+    signal s_db_jogada_enc         : std_logic_vector (3 downto 0);
 begin
     UC: unidade_controle
-      port map (
+    port map (
         clock => clock,
         reset => reset,
         iniciar => iniciar,
@@ -198,10 +198,10 @@ begin
         randomiza_nota => s_randomiza_nota,
         reset_gera_nota => s_reset_gera_nota,
         db_estado => s_db_estado
-     );
+    );
 
     DF: fluxo_dados
-      port map (
+    port map (
         clock => clock,
         zera_contjog => s_zera_contjog,
         conta_contjog => s_conta_contjog,
@@ -231,15 +231,15 @@ begin
         db_jogada => s_db_jogada,
         db_nota_aleatoria => s_db_nota_aleatoria,
         db_rodada => s_db_rodada
-      );
+    );
 
     GERFREQ: gerador_freq
-      port map (
+    port map (
         clock => clock_nota,
         nota => s_nota,
         toca_nota => s_toca_nota,
         saida => sinal_buzzer
-      );
+    );
 
     s_erros_pad <= "0"&s_erros;
     s_db_jogada_pad <= "0000"&s_db_jogada;
@@ -247,26 +247,26 @@ begin
 
     HEX_ESTADO: hexa7seg
     port map(
-      hexa => s_db_estado,
-      sseg => db_estado
+        hexa => s_db_estado,
+        sseg => db_estado
     );
 
     HEX_ENDERECO: hexa7seg
     port map(
-      hexa => s_db_rodada,
-      sseg => db_rodada
+        hexa => s_db_rodada,
+        sseg => db_rodada
     );
 
     HEX_ERROS1: hexa7seg -- Lower 4 bits
     port map (
-      hexa => s_erros_pad(3 downto 0),
-      sseg => erros(6 downto 0)
+        hexa => s_erros_pad(3 downto 0),
+        sseg => erros(6 downto 0)
     );
 
     HEX_ERROS2: hexa7seg -- Upper 3 bits
     port map (
-      hexa => s_erros_pad(7 downto 4),
-      sseg => erros(13 downto 7)
+        hexa => s_erros_pad(7 downto 4),
+        sseg => erros(13 downto 7)
     );
 
     ENC_JOG: encoder16x4         
@@ -283,14 +283,14 @@ begin
 
     HEX_JOG: hexa7seg
     port map (
-      hexa => s_db_jogada_enc, 
-      sseg => db_jogada 
+        hexa => s_db_jogada_enc, 
+        sseg => db_jogada 
     );
 
     HEX_MEM: hexa7seg
     port map (
-      hexa => s_db_nota_aleatoria_enc, 
-      sseg => db_nota_aleatoria
+        hexa => s_db_nota_aleatoria_enc, 
+        sseg => db_nota_aleatoria
     );
 
     tb_nota_aleatoria_raw <= s_db_nota_aleatoria;
