@@ -8,10 +8,10 @@ entity note_genius is
         -- inputs
         clock               : in std_logic;
         clock_nota          : in std_logic;
-        reset               : in std_logic;
-        iniciar             : in std_logic;
+        reset               : in std_logic; -- ativo baixo
+        iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
-        iniciar_tradicional : in std_logic;
+        iniciar_tradicional : in std_logic; -- ativo baixo
 
         -- outputs
         erros        : out std_logic_vector (13 downto 0);
@@ -166,13 +166,21 @@ architecture arch of note_genius is
 
     signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
     signal s_db_jogada_enc         : std_logic_vector (3 downto 0);
+	 
+	 signal not_reset : std_logic;
+	 signal not_iniciar : std_logic;
+	 signal not_iniciar_tradicional : std_logic;
 begin
+	not_reset <= not reset;
+	not_iniciar <= not iniciar;
+	not_iniciar_tradicional <= not iniciar_tradicional;
+
     UC: unidade_controle
     port map (
         clock => clock,
-        reset => reset,
-        iniciar => iniciar,
-        iniciar_tradicional => iniciar_tradicional,
+        reset => not_reset,
+        iniciar => not_iniciar,
+        iniciar_tradicional => not_iniciar_tradicional,
         jogada_feita => s_jogada_feita,
         jogada_correta => s_jogada_correta,
         fim_contjog => s_fim_contjog,
