@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Fri Mar 24 11:34:38 2023
+# Generated on: Fri Mar 24 16:18:24 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -174,6 +174,12 @@ if {$make_assignments} {
 	set_location_assignment PIN_H16 -to db_toca_nota
 	set_location_assignment PIN_T15 -to sinal_buzzer
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+	set_location_assignment PIN_U13 -to sel_dificuldade[0]
+	set_location_assignment PIN_V13 -to sel_dificuldade[1]
+	set_location_assignment PIN_T13 -to sel_dificuldade[2]
+	set_location_assignment PIN_T12 -to sel_dificuldade[3]
+
+	# Including default assignments
 
 	# Commit assignments
 	export_assignments

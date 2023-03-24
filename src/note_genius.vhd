@@ -12,7 +12,7 @@ entity note_genius is
         iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
         iniciar_tradicional : in std_logic; -- ativo baixo
-        sel_dificuldade     : in std_logic_vector (7 downto 0);
+        sel_dificuldade     : in std_logic_vector (3 downto 0);
 
         -- outputs
         erros        : out std_logic_vector (13 downto 0);
@@ -33,6 +33,8 @@ entity note_genius is
 end entity;
 
 architecture arch of note_genius is
+    constant is_simulation : boolean := true; -- set this to true when simulating
+
     component hexa7seg is
       port (
           hexa : in  std_logic_vector(3 downto 0);
@@ -78,11 +80,15 @@ architecture arch of note_genius is
             randomiza_nota      : out std_logic;
             reset_gera_nota     : out std_logic;
             db_estado           : out std_logic_vector(3 downto 0);
-				sel_dificuldade     : in  std_logic_vector(7 downto 0)
+            sel_dificuldade     : in  std_logic_vector(3 downto 0)
         );
     end component;
 
     component fluxo_dados is
+        generic (
+            timer_silencio_len  : integer := 500;
+            timer_nota_len      : integer := 1000
+        );
         port (
             clock               : in  std_logic;
             zera_contjog        : in  std_logic;
@@ -168,7 +174,7 @@ architecture arch of note_genius is
 
     signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
     signal s_db_jogada_enc         : std_logic_vector (3 downto 0);
-	 
+
 	 signal not_reset : std_logic;
 	 signal not_iniciar : std_logic;
 	 signal not_iniciar_tradicional : std_logic;
@@ -211,38 +217,80 @@ begin
         sel_dificuldade => sel_dificuldade
     );
 
-    DF: fluxo_dados
-    port map (
-        clock => clock,
-        zera_contjog => s_zera_contjog,
-        conta_contjog => s_conta_contjog,
-        zera_regnota => s_zera_regnota,
-        registra_regnota => s_registra_regnota,
-        chaves => chaves,
-        zera_regmasc => s_zera_regmasc,
-        registra_regmasc => s_registra_regmasc,
-        masc_dado => s_masc_dado,
-        nota_src => s_nota_src,
-        zera_conterros => s_zera_conterros,
-        conta_conterros => s_conta_conterros,
-        zera_detec => s_zera_detec,
-        zera_tnota => s_zera_tnota,
-        conta_tnota => s_conta_tnota,
-        zera_tsil => s_zera_tsil,
-        conta_tsil => s_conta_tsil,
-        reset_gera_nota => s_reset_gera_nota,
-        randomiza_nota => s_randomiza_nota,
-        fim_contjog => s_fim_contjog,
-        jogada_correta => s_jogada_correta,
-        nota => s_nota,
-        erros => s_erros,
-        jogada_feita => s_jogada_feita,
-        timeout_tnota => s_timeout_tnota,
-        timeout_tsil => s_timeout_tsil,
-        db_jogada => s_db_jogada,
-        db_nota_aleatoria => s_db_nota_aleatoria,
-        db_rodada => s_db_rodada
-    );
+    -- change timer sizes to speedup simulation
+    SIMDF: if is_simulation generate
+        DF: fluxo_dados
+        generic map (
+            timer_silencio_len => 10,
+            timer_nota_len => 5
+        )
+        port map (
+            clock => clock,
+            zera_contjog => s_zera_contjog,
+            conta_contjog => s_conta_contjog,
+            zera_regnota => s_zera_regnota,
+            registra_regnota => s_registra_regnota,
+            chaves => chaves,
+            zera_regmasc => s_zera_regmasc,
+            registra_regmasc => s_registra_regmasc,
+            masc_dado => s_masc_dado,
+            nota_src => s_nota_src,
+            zera_conterros => s_zera_conterros,
+            conta_conterros => s_conta_conterros,
+            zera_detec => s_zera_detec,
+            zera_tnota => s_zera_tnota,
+            conta_tnota => s_conta_tnota,
+            zera_tsil => s_zera_tsil,
+            conta_tsil => s_conta_tsil,
+            reset_gera_nota => s_reset_gera_nota,
+            randomiza_nota => s_randomiza_nota,
+            fim_contjog => s_fim_contjog,
+            jogada_correta => s_jogada_correta,
+            nota => s_nota,
+            erros => s_erros,
+            jogada_feita => s_jogada_feita,
+            timeout_tnota => s_timeout_tnota,
+            timeout_tsil => s_timeout_tsil,
+            db_jogada => s_db_jogada,
+            db_nota_aleatoria => s_db_nota_aleatoria,
+            db_rodada => s_db_rodada
+        );
+    end generate;
+
+    SYNTHDF: if not is_simulation generate
+        DF: fluxo_dados
+        port map (
+            clock => clock,
+            zera_contjog => s_zera_contjog,
+            conta_contjog => s_conta_contjog,
+            zera_regnota => s_zera_regnota,
+            registra_regnota => s_registra_regnota,
+            chaves => chaves,
+            zera_regmasc => s_zera_regmasc,
+            registra_regmasc => s_registra_regmasc,
+            masc_dado => s_masc_dado,
+            nota_src => s_nota_src,
+            zera_conterros => s_zera_conterros,
+            conta_conterros => s_conta_conterros,
+            zera_detec => s_zera_detec,
+            zera_tnota => s_zera_tnota,
+            conta_tnota => s_conta_tnota,
+            zera_tsil => s_zera_tsil,
+            conta_tsil => s_conta_tsil,
+            reset_gera_nota => s_reset_gera_nota,
+            randomiza_nota => s_randomiza_nota,
+            fim_contjog => s_fim_contjog,
+            jogada_correta => s_jogada_correta,
+            nota => s_nota,
+            erros => s_erros,
+            jogada_feita => s_jogada_feita,
+            timeout_tnota => s_timeout_tnota,
+            timeout_tsil => s_timeout_tsil,
+            db_jogada => s_db_jogada,
+            db_nota_aleatoria => s_db_nota_aleatoria,
+            db_rodada => s_db_rodada
+        );
+    end generate;
 
     GERFREQ: gerador_freq
     port map (

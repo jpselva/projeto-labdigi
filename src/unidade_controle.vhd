@@ -13,7 +13,7 @@ entity unidade_controle is
         fim_contjog         : in std_logic;
         timeout_tnota       : in std_logic;
         timeout_tsil        : in std_logic;
-        sel_dificuldade     : in std_logic_vector(7 downto 0);
+        sel_dificuldade     : in std_logic_vector(3 downto 0);
 
         -- outputs
         zera_contjog        : out std_logic;
@@ -47,13 +47,11 @@ architecture fsm of unidade_controle is
                       acertou_jogada, espera_silencio, fim, seleciona_modo);
     signal Eatual, Eprox : t_estado;
 begin
-    masc_dado(0 downto 6) <= sel_dificuldade(0 downto 6);
-
-    gen: for i in 11 downto 7 generate 
-        masc_dado(i) <= sel_dificuldade(7);
-    end generate;
-
-
+    masc_dado <= "111111111111" when sel_dificuldade(3) = '1' else
+                 "000001111111" when sel_dificuldade(2) = '1' else
+                 "000000011111" when sel_dificuldade(1) = '1' else
+                 "000000000111";
+                  
     -- memoria de estado
     process (clock, reset)
     begin
