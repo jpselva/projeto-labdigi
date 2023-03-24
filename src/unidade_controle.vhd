@@ -13,6 +13,7 @@ entity unidade_controle is
         fim_contjog         : in std_logic;
         timeout_tnota       : in std_logic;
         timeout_tsil        : in std_logic;
+        sel_dificuldade     : in std_logic_vector(7 downto 0);
 
         -- outputs
         zera_contjog        : out std_logic;
@@ -46,6 +47,12 @@ architecture fsm of unidade_controle is
                       acertou_jogada, espera_silencio, fim, seleciona_modo);
     signal Eatual, Eprox : t_estado;
 begin
+    masc_dado(0 downto 6) <= sel_dificuldade(0 downto 6)
+
+    for i in 11 downto 7 generate 
+        masc_dado(i) <= sel_dificuldade(7);
+    end generate;
+
 
     -- memoria de estado
     process (clock, reset)
@@ -67,7 +74,6 @@ begin
         registra_regnota  <= '0';
         zera_regmasc      <= '0';
         registra_regmasc  <= '0';
-        masc_dado         <= "000000000000";
         nota_src          <= '0';
         zera_conterros    <= '0';
         conta_conterros   <= '0';
@@ -97,13 +103,12 @@ begin
                 zera_tnota <= '1';
                 zera_tsil <= '1';
                 zera_detec <= '1';
-                registra_regmasc <= '1';
-                masc_dado <= "000000000111";
                 reset_gera_nota <= '1';
                 
                 Eprox <= seleciona_modo;
 
             when seleciona_modo =>
+                registra_regmasc <= '1';
                 randomiza_nota <= '1';
 
                 if ( iniciar_tradicional = '1' ) then

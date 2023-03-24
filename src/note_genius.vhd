@@ -12,6 +12,7 @@ entity note_genius is
         iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
         iniciar_tradicional : in std_logic; -- ativo baixo
+        sel_dificuldade     : in std_logic_vector (7 downto 0);
 
         -- outputs
         erros        : out std_logic_vector (13 downto 0);
@@ -205,7 +206,8 @@ begin
         pronto => pronto,
         randomiza_nota => s_randomiza_nota,
         reset_gera_nota => s_reset_gera_nota,
-        db_estado => s_db_estado
+        db_estado => s_db_estado,
+        sel_dificuldade => sel_dificuldade
     );
 
     DF: fluxo_dados
