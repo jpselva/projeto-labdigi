@@ -13,6 +13,7 @@ entity unidade_controle is
         fim_contjog         : in std_logic;
         timeout_tnota       : in std_logic;
         timeout_tsil        : in std_logic;
+        sel_dificuldade     : in std_logic_vector(3 downto 0);
 
         -- outputs
         zera_contjog        : out std_logic;
@@ -46,7 +47,11 @@ architecture fsm of unidade_controle is
                       acertou_jogada, espera_silencio, fim, seleciona_modo);
     signal Eatual, Eprox : t_estado;
 begin
-
+    masc_dado <= "111111111111" when sel_dificuldade(3) = '1' else
+                 "000001111111" when sel_dificuldade(2) = '1' else
+                 "000000011111" when sel_dificuldade(1) = '1' else
+                 "000000000111";
+                  
     -- memoria de estado
     process (clock, reset)
     begin
@@ -67,7 +72,6 @@ begin
         registra_regnota  <= '0';
         zera_regmasc      <= '0';
         registra_regmasc  <= '0';
-        masc_dado         <= "000000000000";
         nota_src          <= '0';
         zera_conterros    <= '0';
         conta_conterros   <= '0';
@@ -97,13 +101,12 @@ begin
                 zera_tnota <= '1';
                 zera_tsil <= '1';
                 zera_detec <= '1';
-                registra_regmasc <= '1';
-                masc_dado <= "000000000111";
                 reset_gera_nota <= '1';
                 
                 Eprox <= seleciona_modo;
 
             when seleciona_modo =>
+                registra_regmasc <= '1';
                 randomiza_nota <= '1';
 
                 if ( iniciar_tradicional = '1' ) then
@@ -141,8 +144,6 @@ begin
 				
                 if ( jogada_correta = '0' ) then
                     Eprox <= espera_errou;
-                elsif ( fim_contjog = '1' ) then
-                    Eprox <= fim;
                 else
                     Eprox <= espera_acertou;
                 end if;
@@ -154,8 +155,10 @@ begin
 
                 if ( timeout_tnota = '0' ) then
                     Eprox <= espera_acertou;
-                else
+                elsif ( fim_contjog = '0' ) then
                     Eprox <= acertou_jogada;
+                else
+                    Eprox <= fim;
                 end if;
 
 			when acertou_jogada => 

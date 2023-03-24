@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Thu Mar 23 21:27:58 2023
+# Generated on: Fri Mar 24 16:55:19 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -78,8 +78,23 @@ if {$make_assignments} {
 	set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 	set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_REPORT_WORST_CASE_TIMING_PATHS OFF -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
+	set_global_assignment -name TDC_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_DO_CCPP_REMOVAL ON -family "MAX 10"
+	set_global_assignment -name DISABLE_LEGACY_TIMING_ANALYZER OFF -family "MAX 10"
+	set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON -family "MAX 10"
+	set_global_assignment -name SYNCHRONIZATION_REGISTER_CHAIN_LENGTH 2 -family "MAX 10"
+	set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM ON -family "MAX 10"
+	set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS" -family "MAX 10"
+	set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON -family "MAX 10"
+	set_global_assignment -name AUTO_DELAY_CHAINS ON -family "MAX 10"
+	set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF -family "MAX 10"
+	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
+	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
 	set_location_assignment PIN_B8 -to reset
-	set_location_assignment PIN_F15 -to iniciar_tradicional
+	set_location_assignment PIN_B12 -to iniciar_tradicional
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
 	set_location_assignment PIN_C10 -to chaves[0]
@@ -139,24 +154,13 @@ if {$make_assignments} {
 	set_location_assignment PIN_B21 -to db_estado[4]
 	set_location_assignment PIN_C22 -to db_estado[5]
 	set_location_assignment PIN_B22 -to db_estado[6]
+	set_location_assignment PIN_A13 -to sel_dificuldade[0]
+	set_location_assignment PIN_A14 -to sel_dificuldade[1]
+	set_location_assignment PIN_B14 -to sel_dificuldade[2]
+	set_location_assignment PIN_F15 -to sel_dificuldade[3]
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Including default assignments
-	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_REPORT_WORST_CASE_TIMING_PATHS OFF -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
-	set_global_assignment -name TDC_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_DO_CCPP_REMOVAL ON -family "MAX 10"
-	set_global_assignment -name DISABLE_LEGACY_TIMING_ANALYZER OFF -family "MAX 10"
-	set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON -family "MAX 10"
-	set_global_assignment -name SYNCHRONIZATION_REGISTER_CHAIN_LENGTH 2 -family "MAX 10"
-	set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM ON -family "MAX 10"
-	set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS" -family "MAX 10"
-	set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON -family "MAX 10"
-	set_global_assignment -name AUTO_DELAY_CHAINS ON -family "MAX 10"
-	set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF -family "MAX 10"
-	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
-	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
 
 	# Commit assignments
 	export_assignments

@@ -11,6 +11,7 @@ entity note_genius is
         iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
         iniciar_tradicional : in std_logic;
+        sel_dificuldade     : in std_logic_vector (3 downto 0);
 
         -- outputs
         erros        : out std_logic_vector (13 downto 0);
@@ -47,15 +48,16 @@ architecture arch of note_genius is
 
     component unidade_controle is 
         port ( 
-            clock               : in  std_logic; 
-            reset               : in  std_logic; 
-            iniciar             : in  std_logic;
-            iniciar_tradicional : in  std_logic;
-            jogada_feita        : in  std_logic;
-            jogada_correta      : in  std_logic;
-            fim_contjog         : in  std_logic;
-            timeout_tnota       : in  std_logic;
-            timeout_tsil        : in  std_logic;
+            clock               : in std_logic; 
+            reset               : in std_logic; 
+            iniciar             : in std_logic;
+            iniciar_tradicional : in std_logic;
+            jogada_feita        : in std_logic;
+            jogada_correta      : in std_logic;
+            fim_contjog         : in std_logic;
+            timeout_tnota       : in std_logic;
+            timeout_tsil        : in std_logic;
+            sel_dificuldade     : in std_logic_vector(3 downto 0);
             zera_contjog        : out std_logic;
             conta_contjog       : out std_logic;
             zera_regnota        : out std_logic;
@@ -80,6 +82,10 @@ architecture arch of note_genius is
     end component;
 
     component fluxo_dados is
+        generic (
+            timer_silencio_len  : integer := 500;
+            timer_nota_len      : integer := 1000
+        );
         port (
             clock               : in  std_logic;
             zera_contjog        : in  std_logic;
@@ -233,7 +239,8 @@ begin
         pronto => pronto,
         randomiza_nota => s_randomiza_nota,
         reset_gera_nota => s_reset_gera_nota,
-        db_estado => s_db_estado
+        db_estado => s_db_estado,
+        sel_dificuldade => sel_dificuldade
     );
 
     DF: fluxo_dados
