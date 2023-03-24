@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Fri Mar 24 10:00:37 2023
+# Generated on: Fri Mar 24 11:34:38 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -44,7 +44,7 @@ if {$make_assignments} {
 	set_global_assignment -name FAMILY "Cyclone V"
 	set_global_assignment -name DEVICE 5CEBA4F23C7
 	set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
-	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARÃ§O 23, 2023"
+	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARÃÂ§O 23, 2023"
 	set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
 	set_global_assignment -name VHDL_FILE src/shift_register.vhd

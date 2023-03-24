@@ -47,9 +47,9 @@ architecture fsm of unidade_controle is
                       acertou_jogada, espera_silencio, fim, seleciona_modo);
     signal Eatual, Eprox : t_estado;
 begin
-    masc_dado(0 downto 6) <= sel_dificuldade(0 downto 6);
+    masc_dado(0 downto 6) <= sel_dificuldade(0 downto 6)
 
-    gen: for i in 11 downto 7 generate 
+    for i in 11 downto 7 generate 
         masc_dado(i) <= sel_dificuldade(7);
     end generate;
 
