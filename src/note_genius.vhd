@@ -33,7 +33,8 @@ entity note_genius is
 end entity;
 
 architecture arch of note_genius is
-    constant is_simulation : boolean := true; -- set this to true when simulating
+    -- SET TO FALSE WHEN NOT SIMULATING
+    constant is_simulation : boolean := false; 
 
     component hexa7seg is
       port (

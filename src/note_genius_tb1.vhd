@@ -96,7 +96,7 @@ begin
         wait for 2*TbPeriod;
 
         -- Initialize mode
-        sel_dificuldade <= "0001";
+        sel_dificuldade <= "0010";
         iniciar_tradicional <= '1';
         wait for TbPeriod;
         iniciar_tradicional <= '0';
