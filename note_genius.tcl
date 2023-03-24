@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Thu Mar 23 20:02:22 2023
+# Generated on: Thu Mar 23 21:27:58 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -84,16 +84,16 @@ if {$make_assignments} {
 	set_location_assignment PIN_P11 -to clock
 	set_location_assignment PIN_C10 -to chaves[0]
 	set_location_assignment PIN_C11 -to chaves[1]
-	set_location_assignment PIN_C12 -to chaves[2]
-	set_location_assignment PIN_W9 -to chaves[3]
-	set_location_assignment PIN_V8 -to chaves[4]
-	set_location_assignment PIN_W8 -to chaves[5]
-	set_location_assignment PIN_V7 -to chaves[6]
-	set_location_assignment PIN_W7 -to chaves[7]
-	set_location_assignment PIN_W6 -to chaves[8]
-	set_location_assignment PIN_V5 -to chaves[9]
-	set_location_assignment PIN_W5 -to chaves[10]
-	set_location_assignment PIN_AA15 -to chaves[11]
+	set_location_assignment PIN_D12 -to chaves[2]
+	set_location_assignment PIN_W7 -to chaves[3]
+	set_location_assignment PIN_V5 -to chaves[4]
+	set_location_assignment PIN_AA15 -to chaves[5]
+	set_location_assignment PIN_W13 -to chaves[6]
+	set_location_assignment PIN_AB13 -to chaves[7]
+	set_location_assignment PIN_Y11 -to chaves[8]
+	set_location_assignment PIN_W11 -to chaves[9]
+	set_location_assignment PIN_AA10 -to chaves[10]
+	set_location_assignment PIN_Y8 -to chaves[11]
 	set_location_assignment PIN_AA2 -to sinal_buzzer
 	set_location_assignment PIN_A8 -to pronto
 	set_location_assignment PIN_C14 -to erros[0]

@@ -7,8 +7,8 @@ entity note_genius is
     port (
         -- inputs
         clock               : in std_logic;
-        reset               : in std_logic;
-        iniciar             : in std_logic;
+        reset               : in std_logic; -- ativo baixo
+        iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
         iniciar_tradicional : in std_logic;
 
@@ -170,6 +170,8 @@ architecture arch of note_genius is
     signal s_db_estado         : std_logic_vector (3 downto 0);
     signal s_toca_nota         : std_logic;
     signal clk1khz             : std_logic; -- clock corrected to 1khz
+    signal not_reset           : std_logic;
+    signal not_iniciar         : std_logic;
 
     ---------------------------------------------
     -- other signals
@@ -183,10 +185,13 @@ architecture arch of note_genius is
     signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
     signal s_db_jogada_enc : std_logic_vector (3 downto 0);
 begin
+    not_reset <= not reset;
+    not_iniciar <= not iniciar;
+
     -- clock divider
     CLKDIV: contador_m_maior
     generic map (
-        M => 50000 -- generate 1khz clock
+        M => 100000 -- generate 1khz clock
     )
     port map (
         clock => clock,
@@ -201,8 +206,8 @@ begin
     UC: unidade_controle
     port map (
         clock => clk1khz,
-        reset => reset,
-        iniciar => iniciar,
+        reset => not_reset,
+        iniciar => not_iniciar,
         iniciar_tradicional => iniciar_tradicional,
         jogada_feita => s_jogada_feita,
         jogada_correta => s_jogada_correta,
