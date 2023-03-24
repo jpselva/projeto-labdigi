@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Thu Mar 23 18:43:59 2023
+# Generated on: Fri Mar 24 10:00:37 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -44,7 +44,7 @@ if {$make_assignments} {
 	set_global_assignment -name FAMILY "Cyclone V"
 	set_global_assignment -name DEVICE 5CEBA4F23C7
 	set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
-	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARçO 23, 2023"
+	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARÃ§O 23, 2023"
 	set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
 	set_global_assignment -name VHDL_FILE src/shift_register.vhd
@@ -112,9 +112,9 @@ if {$make_assignments} {
 	set_location_assignment PIN_K17 -to chaves[10]
 	set_location_assignment PIN_P18 -to chaves[11]
 	set_location_assignment PIN_N16 -to clock
-	set_location_assignment PIN_C16 -to iniciar
+	set_location_assignment PIN_W9 -to iniciar
 	set_location_assignment PIN_A12 -to pronto
-	set_location_assignment PIN_B16 -to reset
+	set_location_assignment PIN_U7 -to reset
 	set_location_assignment PIN_Y19 -to db_estado[0]
 	set_location_assignment PIN_AB17 -to db_estado[1]
 	set_location_assignment PIN_AA10 -to db_estado[2]
@@ -157,7 +157,7 @@ if {$make_assignments} {
 	set_location_assignment PIN_C1 -to db_rodada[4]
 	set_location_assignment PIN_C2 -to db_rodada[5]
 	set_location_assignment PIN_W19 -to db_rodada[6]
-	set_location_assignment PIN_H15 -to iniciar_tradicional
+	set_location_assignment PIN_M7 -to iniciar_tradicional
 	set_location_assignment PIN_F15 -to db_nota[11]
 	set_location_assignment PIN_E16 -to db_nota[10]
 	set_location_assignment PIN_E14 -to db_nota[9]
@@ -174,8 +174,6 @@ if {$make_assignments} {
 	set_location_assignment PIN_H16 -to db_toca_nota
 	set_location_assignment PIN_T15 -to sinal_buzzer
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
-
-	# Including default assignments
 
 	# Commit assignments
 	export_assignments
