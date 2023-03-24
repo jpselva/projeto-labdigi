@@ -141,8 +141,8 @@ begin
 
     -- sinal para saber se ha chave acionada
     s_chave_acionada <= s_nota_masc(0) or s_nota_masc(1) or s_nota_masc( 2) or s_nota_masc( 3) 
-                   or s_nota_masc(4) or s_nota_masc(5) or s_nota_masc( 6) or s_nota_masc( 7) 
-                   or s_nota_masc(8) or s_nota_masc(9) or s_nota_masc(10) or s_nota_masc(11);
+                     or s_nota_masc(4) or s_nota_masc(5) or s_nota_masc( 6) or s_nota_masc( 7) 
+                     or s_nota_masc(8) or s_nota_masc(9) or s_nota_masc(10) or s_nota_masc(11);
 
     jogada_correta <= s_jogada_correta(2) and s_jogada_correta(1) and s_jogada_correta(0);
     s_nota_masc <= s_mascara and chaves;
