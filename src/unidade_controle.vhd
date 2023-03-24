@@ -141,8 +141,6 @@ begin
 				
                 if ( jogada_correta = '0' ) then
                     Eprox <= espera_errou;
-                elsif ( fim_contjog = '1' ) then
-                    Eprox <= fim;
                 else
                     Eprox <= espera_acertou;
                 end if;
@@ -154,8 +152,10 @@ begin
 
                 if ( timeout_tnota = '0' ) then
                     Eprox <= espera_acertou;
-                else
+                elsif ( fim_contjog = '0' ) then
                     Eprox <= acertou_jogada;
+                else
+                    Eprox <= fim;
                 end if;
 
 			when acertou_jogada => 

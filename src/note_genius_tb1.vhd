@@ -101,7 +101,7 @@ begin
             wait for 20*TbPeriod;
         end loop;
 
-        wait for TbPeriod;
+        wait for TbPeriod*20;
 
         -- Stop the clock and hence terminate the simulation
         TbSimEnded <= '1';
