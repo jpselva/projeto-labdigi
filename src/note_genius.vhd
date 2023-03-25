@@ -178,6 +178,7 @@ architecture arch of note_genius is
     signal clk1khz             : std_logic; -- clock corrected to 1khz
     signal not_reset           : std_logic;
     signal not_iniciar         : std_logic;
+    signal not_chaves          : std_logic_vector(11 downto 0);
 
     ---------------------------------------------
     -- other signals
@@ -193,6 +194,7 @@ architecture arch of note_genius is
 begin
     not_reset <= not reset;
     not_iniciar <= not iniciar;
+    not_chaves <= not chaves;
 
     -- clock divider
     CLKDIV: contador_m_maior
@@ -242,7 +244,7 @@ begin
         db_estado => s_db_estado,
         sel_dificuldade => sel_dificuldade
     );
-
+	
     DF: fluxo_dados
     port map (
         clock => clk1khz,
@@ -250,7 +252,7 @@ begin
         conta_contjog => s_conta_contjog,
         zera_regnota => s_zera_regnota,
         registra_regnota => s_registra_regnota,
-        chaves => chaves,
+        chaves => not_chaves,
         zera_regmasc => s_zera_regmasc,
         registra_regmasc => s_registra_regmasc,
         masc_dado => s_masc_dado,

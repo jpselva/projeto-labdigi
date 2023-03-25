@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Fri Mar 24 20:33:40 2023
+# Generated on: Sat Mar 25 14:47:00 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -97,11 +97,11 @@ if {$make_assignments} {
 	set_location_assignment PIN_B12 -to iniciar_tradicional
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
-	set_location_assignment PIN_C10 -to chaves[0]
-	set_location_assignment PIN_C11 -to chaves[1]
-	set_location_assignment PIN_D12 -to chaves[2]
-	set_location_assignment PIN_C12 -to chaves[3]
-	set_location_assignment PIN_A12 -to chaves[4]
+	set_location_assignment PIN_W10 -to chaves[0]
+	set_location_assignment PIN_W9 -to chaves[1]
+	set_location_assignment PIN_W8 -to chaves[2]
+	set_location_assignment PIN_W7 -to chaves[3]
+	set_location_assignment PIN_V5 -to chaves[4]
 	set_location_assignment PIN_AA15 -to chaves[5]
 	set_location_assignment PIN_W13 -to chaves[6]
 	set_location_assignment PIN_AB13 -to chaves[7]
@@ -156,9 +156,9 @@ if {$make_assignments} {
 	set_location_assignment PIN_A14 -to sel_dificuldade[1]
 	set_location_assignment PIN_B14 -to sel_dificuldade[2]
 	set_location_assignment PIN_F15 -to sel_dificuldade[3]
-	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 	set_location_assignment PIN_A8 -to pronto
 	set_location_assignment PIN_B11 -to db_toca_nota
+	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Including default assignments
 
