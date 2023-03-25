@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Fri Mar 24 16:55:19 2023
+# Generated on: Fri Mar 24 20:33:40 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -100,8 +100,8 @@ if {$make_assignments} {
 	set_location_assignment PIN_C10 -to chaves[0]
 	set_location_assignment PIN_C11 -to chaves[1]
 	set_location_assignment PIN_D12 -to chaves[2]
-	set_location_assignment PIN_W7 -to chaves[3]
-	set_location_assignment PIN_V5 -to chaves[4]
+	set_location_assignment PIN_C12 -to chaves[3]
+	set_location_assignment PIN_A12 -to chaves[4]
 	set_location_assignment PIN_AA15 -to chaves[5]
 	set_location_assignment PIN_W13 -to chaves[6]
 	set_location_assignment PIN_AB13 -to chaves[7]
@@ -110,7 +110,6 @@ if {$make_assignments} {
 	set_location_assignment PIN_AA10 -to chaves[10]
 	set_location_assignment PIN_Y8 -to chaves[11]
 	set_location_assignment PIN_AA2 -to sinal_buzzer
-	set_location_assignment PIN_A8 -to pronto
 	set_location_assignment PIN_C14 -to erros[0]
 	set_location_assignment PIN_E15 -to erros[1]
 	set_location_assignment PIN_C15 -to erros[2]
@@ -125,7 +124,6 @@ if {$make_assignments} {
 	set_location_assignment PIN_A17 -to erros[11]
 	set_location_assignment PIN_A18 -to erros[12]
 	set_location_assignment PIN_B17 -to erros[13]
-	set_location_assignment PIN_B11 -to db_toca_nota
 	set_location_assignment PIN_J20 -to db_rodada[0]
 	set_location_assignment PIN_K20 -to db_rodada[1]
 	set_location_assignment PIN_L18 -to db_rodada[2]
@@ -159,6 +157,8 @@ if {$make_assignments} {
 	set_location_assignment PIN_B14 -to sel_dificuldade[2]
 	set_location_assignment PIN_F15 -to sel_dificuldade[3]
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+	set_location_assignment PIN_A8 -to pronto
+	set_location_assignment PIN_B11 -to db_toca_nota
 
 	# Including default assignments
 
