@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Sat Mar 25 20:58:30 2023
+# Generated on: Sat Mar 25 23:13:29 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -49,24 +49,6 @@ if {$make_assignments} {
 	set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 	set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
-	set_global_assignment -name VHDL_FILE src/shift_register.vhd
-	set_global_assignment -name VHDL_FILE src/registrador_n.vhd
-	set_global_assignment -name VHDL_FILE src/ram_16x12.vhd
-	set_global_assignment -name VHDL_FILE src/note_genius_tb2.vhd
-	set_global_assignment -name VHDL_FILE src/note_genius_tb1.vhd
-	set_global_assignment -name VHDL_FILE src/note_genius.vhd
-	set_global_assignment -name VHDL_FILE src/note_generator.vhd
-	set_global_assignment -name VHDL_FILE src/hexa7seg.vhd
-	set_global_assignment -name VHDL_FILE src/gerador_freq.vhd
-	set_global_assignment -name VHDL_FILE src/fluxo_dados.vhd
-	set_global_assignment -name VHDL_FILE src/encoder16x4.vhd
-	set_global_assignment -name VHDL_FILE src/edge_detector.vhd
-	set_global_assignment -name VHDL_FILE src/decoder4x16.vhd
-	set_global_assignment -name VHDL_FILE src/contador_m_maior.vhd
-	set_global_assignment -name VHDL_FILE src/contador_m.vhd
-	set_global_assignment -name VHDL_FILE src/contador_163.vhd
-	set_global_assignment -name VHDL_FILE src/comparador_85.vhd
 	set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 	set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 	set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -93,6 +75,30 @@ if {$make_assignments} {
 	set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF -family "MAX 10"
 	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
 	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
+	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
+	set_global_assignment -name VHDL_FILE src/shift_register.vhd
+	set_global_assignment -name VHDL_FILE src/rom_palavras.vhd
+	set_global_assignment -name VHDL_FILE src/registrador_n.vhd
+	set_global_assignment -name VHDL_FILE src/ram_16x12.vhd
+	set_global_assignment -name VHDL_FILE src/note_genius_tb2.vhd
+	set_global_assignment -name VHDL_FILE src/note_genius_tb1.vhd
+	set_global_assignment -name VHDL_FILE src/note_genius.vhd
+	set_global_assignment -name VHDL_FILE src/note_generator.vhd
+	set_global_assignment -name VHDL_FILE src/msg_generator.vhd
+	set_global_assignment -name VHDL_FILE src/hexa7seg.vhd
+	set_global_assignment -name VHDL_FILE src/gerador_freq.vhd
+	set_global_assignment -name VHDL_FILE src/fluxo_dados.vhd
+	set_global_assignment -name VHDL_FILE src/encoder_letras.vhd
+	set_global_assignment -name VHDL_FILE src/encoder16x4.vhd
+	set_global_assignment -name VHDL_FILE src/edge_detector.vhd
+	set_global_assignment -name VHDL_FILE src/decoder4x16.vhd
+	set_global_assignment -name VHDL_FILE src/contador_m_maior.vhd
+	set_global_assignment -name VHDL_FILE src/contador_m.vhd
+	set_global_assignment -name VHDL_FILE src/contador_163.vhd
+	set_global_assignment -name VHDL_FILE src/comparador_85.vhd
+	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+	set_global_assignment -name SOURCE_FILE db/note_genius.cmp.rdb
 	set_location_assignment PIN_B8 -to reset
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
@@ -150,7 +156,6 @@ if {$make_assignments} {
 	set_location_assignment PIN_F15 -to sel_dificuldade[3]
 	set_location_assignment PIN_A8 -to pronto
 	set_location_assignment PIN_B11 -to db_toca_nota
-	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 	set_location_assignment PIN_F18 -to db_nota_correta[0]
 	set_location_assignment PIN_E20 -to db_nota_correta[1]
 	set_location_assignment PIN_E19 -to db_nota_correta[2]
@@ -160,6 +165,49 @@ if {$make_assignments} {
 	set_location_assignment PIN_F20 -to db_nota_correta[6]
 	set_location_assignment PIN_A12 -to sel_modo[0]
 	set_location_assignment PIN_B12 -to sel_modo[1]
+	set_location_assignment PIN_C14 -to msg_hex0[0]
+	set_location_assignment PIN_C17 -to msg_hex0[6]
+	set_location_assignment PIN_D17 -to msg_hex0[5]
+	set_location_assignment PIN_E16 -to msg_hex0[4]
+	set_location_assignment PIN_C16 -to msg_hex0[3]
+	set_location_assignment PIN_C15 -to msg_hex0[2]
+	set_location_assignment PIN_E15 -to msg_hex0[1]
+	set_location_assignment PIN_B17 -to msg_hex1[6]
+	set_location_assignment PIN_A18 -to msg_hex1[5]
+	set_location_assignment PIN_A17 -to msg_hex1[4]
+	set_location_assignment PIN_B16 -to msg_hex1[3]
+	set_location_assignment PIN_E18 -to msg_hex1[2]
+	set_location_assignment PIN_D18 -to msg_hex1[1]
+	set_location_assignment PIN_C18 -to msg_hex1[0]
+	set_location_assignment PIN_B22 -to msg_hex2[6]
+	set_location_assignment PIN_C22 -to msg_hex2[5]
+	set_location_assignment PIN_B21 -to msg_hex2[4]
+	set_location_assignment PIN_A21 -to msg_hex2[3]
+	set_location_assignment PIN_B19 -to msg_hex2[2]
+	set_location_assignment PIN_A20 -to msg_hex2[1]
+	set_location_assignment PIN_B20 -to msg_hex2[0]
+	set_location_assignment PIN_E17 -to msg_hex3[6]
+	set_location_assignment PIN_D19 -to msg_hex3[5]
+	set_location_assignment PIN_C20 -to msg_hex3[4]
+	set_location_assignment PIN_C19 -to msg_hex3[3]
+	set_location_assignment PIN_E21 -to msg_hex3[2]
+	set_location_assignment PIN_E22 -to msg_hex3[1]
+	set_location_assignment PIN_F21 -to msg_hex3[0]
+	set_location_assignment PIN_F20 -to msg_hex4[6]
+	set_location_assignment PIN_F19 -to msg_hex4[5]
+	set_location_assignment PIN_H19 -to msg_hex4[4]
+	set_location_assignment PIN_J18 -to msg_hex4[3]
+	set_location_assignment PIN_E19 -to msg_hex4[2]
+	set_location_assignment PIN_E20 -to msg_hex4[1]
+	set_location_assignment PIN_F18 -to msg_hex4[0]
+	set_location_assignment PIN_N20 -to msg_hex5[6]
+	set_location_assignment PIN_N19 -to msg_hex5[5]
+	set_location_assignment PIN_M20 -to msg_hex5[4]
+	set_location_assignment PIN_N18 -to msg_hex5[3]
+	set_location_assignment PIN_L18 -to msg_hex5[2]
+	set_location_assignment PIN_K20 -to msg_hex5[1]
+	set_location_assignment PIN_J20 -to msg_hex5[0]
+	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Including default assignments
 

@@ -5,8 +5,8 @@ use ieee.math_real.all;
 
 entity fluxo_dados is
     generic (
-        timer_silencio_len  : integer := 5;
-        timer_nota_len      : integer := 10
+        timer_silencio_len  : integer := 500;
+        timer_nota_len      : integer := 1000
     );
     port (
         clock                  : in  std_logic;
