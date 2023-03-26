@@ -289,7 +289,8 @@ begin
         reset_lfsr => s_reset_lfsr,
         shift_lfsr => s_shift_lfsr,
         registra_reg_nota_corr => s_registra_reg_nota_corr,
-        db_nota_correta => s_db_nota_correta
+        db_nota_correta => s_db_nota_correta,
+        jogada_correta => s_jogada_correta
     );
 
     GERFREQ: gerador_freq
