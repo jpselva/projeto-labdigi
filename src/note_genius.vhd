@@ -19,13 +19,13 @@ entity note_genius is
         sinal_buzzer : out std_logic;
 
         -- messages
-
         msg_hex0          : out std_logic_vector (6 downto 0);
         msg_hex1          : out std_logic_vector (6 downto 0);
         msg_hex2          : out std_logic_vector (6 downto 0);
         msg_hex3          : out std_logic_vector (6 downto 0);
         msg_hex4          : out std_logic_vector (6 downto 0);
         msg_hex5          : out std_logic_vector (6 downto 0);
+
         -- debug
         db_estado         : out std_logic_vector (6 downto 0);
         db_jogada         : out std_logic_vector (6 downto 0);
@@ -87,6 +87,7 @@ architecture arch of note_genius is
             reset_lfsr             : out std_logic;
             shift_lfsr             : out std_logic;
             registra_reg_nota_corr : out std_logic;
+            msg_end                : out std_logic_vector(3 downto 0);
             db_estado              : out std_logic_vector(3 downto 0)
         );
     end component ;
@@ -166,8 +167,9 @@ architecture arch of note_genius is
           hex3    : out std_logic_vector( 6 downto 0);
           hex4    : out std_logic_vector( 6 downto 0);
           hex5    : out std_logic_vector( 6 downto 0)
-        ) ;
-      end component;
+        );
+    end component;
+
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
@@ -274,6 +276,7 @@ begin
         registra_reg_nota_corr => s_registra_reg_nota_corr,
         db_estado => s_db_estado,
         sel_dificuldade => sel_dificuldade,
+        msg_end => s_msg_end,
         lfsr_compativel => s_lfsr_compativel
     );
 	

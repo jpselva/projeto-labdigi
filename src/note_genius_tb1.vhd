@@ -8,22 +8,37 @@ architecture tb of note_genius_tb1 is
 
     component note_genius is
         port (
+            -- inputs
             clock               : in std_logic;
-            reset               : in std_logic;
-            iniciar             : in std_logic;
+            reset               : in std_logic; -- ativo baixo
+            iniciar             : in std_logic; -- ativo baixo
             chaves              : in std_logic_vector (11 downto 0);
             sel_dificuldade     : in std_logic_vector (3 downto 0);
             sel_modo            : in std_logic_vector (1 downto 0);
-            erros               : out std_logic_vector (13 downto 0);
-            pronto              : out std_logic;
-            sinal_buzzer        : out std_logic;
-            db_estado           : out std_logic_vector (6 downto 0);
-            db_jogada           : out std_logic_vector (6 downto 0);
-            db_nota_correta     : out std_logic_vector (6 downto 0);
-            db_rodada           : out std_logic_vector (6 downto 0);
-            db_toca_nota        : out std_logic;
-            db_nota             : out std_logic_vector (11 downto 0);
-            tb_nota_correta_raw : out std_logic_vector (11 downto 0)
+    
+            -- outputs
+            erros        : out std_logic_vector (13 downto 0);
+            pronto       : out std_logic;
+            sinal_buzzer : out std_logic;
+    
+            -- messages
+            msg_hex0          : out std_logic_vector (6 downto 0);
+            msg_hex1          : out std_logic_vector (6 downto 0);
+            msg_hex2          : out std_logic_vector (6 downto 0);
+            msg_hex3          : out std_logic_vector (6 downto 0);
+            msg_hex4          : out std_logic_vector (6 downto 0);
+            msg_hex5          : out std_logic_vector (6 downto 0);
+    
+            -- debug
+            db_estado         : out std_logic_vector (6 downto 0);
+            db_jogada         : out std_logic_vector (6 downto 0);
+            db_nota_correta : out std_logic_vector (6 downto 0);
+            db_rodada         : out std_logic_vector (6 downto 0);
+            db_toca_nota      : out std_logic;
+            db_nota           : out std_logic_vector (11 downto 0);
+    
+            -- simulacao
+            tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
         );
     end component;
 
@@ -67,7 +82,13 @@ begin
         db_rodada => db_rodada,
         db_toca_nota => db_toca_nota,
         db_nota => db_nota,
-        tb_nota_correta_raw => tb_nota_correta_raw
+        tb_nota_correta_raw => tb_nota_correta_raw,
+        msg_hex0 => open,
+        msg_hex1 => open,
+        msg_hex2 => open,
+        msg_hex3 => open,
+        msg_hex4 => open,
+        msg_hex5 => open
     );
 
     -- Clock generation

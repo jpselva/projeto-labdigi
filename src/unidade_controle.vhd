@@ -49,7 +49,7 @@ architecture fsm of unidade_controle is
 
                       toca_tr, espera_tr, registra_tr, comparacao_tr, espera_errou_tr, 
                       espera_acertou_tr, errou_jogada_tr, acertou_jogada_tr, 
-                      espera_silencio_tr, fim_tr, seleciona_dif_tr,
+                      silencio_acertou_tr, silencio_errou_tr, fim_tr, seleciona_dif_tr,
                       shift_lfsr_tr, verifica_lfsr_tr,
 
                       espera_pr, registra_pr, toca_pr);
@@ -226,7 +226,7 @@ begin
                 zera_tsil <= '1';
                 conta_contjog <= '1';
 
-                Eprox <= espera_silencio_tr;
+                Eprox <= silencio_acertou_tr;
 
 			when espera_errou_tr =>
                 msg_end <= "0101";
@@ -244,20 +244,29 @@ begin
                 zera_tsil <= '1';
                 conta_conterros <= '1';
 
-                Eprox <= espera_silencio_tr;
+                Eprox <= silencio_errou_tr;
             
-            when espera_silencio_tr =>
+            when silencio_acertou_tr =>
+                conta_tsil <= '1';
+                msg_end <= "1000";
+                if ( timeout_tsil = '0' ) then
+                    Eprox <= silencio_acertou_tr;
+                else
+                    Eprox <= shift_lfsr_tr;
+                end if;
+            
+            when silencio_errou_tr =>
                 conta_tsil <= '1';
                 msg_end <= "0110";
                 if ( timeout_tsil = '0' ) then
-                    Eprox <= espera_silencio_tr;
+                    Eprox <= silencio_errou_tr;
                 else
-                    Eprox <= shift_lfsr_tr;
+                    Eprox <= toca_tr;
                 end if;
 
             when fim_tr =>
                 pronto <= '1';
-
+                msg_end <= "0111";
                 if ( iniciar = '1' ) then
                     Eprox <= preparacao;
                 else
@@ -309,7 +318,8 @@ begin
                      "0100" when comparacao_tr,      -- 4
                      "0101" when errou_jogada_tr,    -- 5
                      "0110" when acertou_jogada_tr,  -- 6
-                     "0111" when espera_silencio_tr, -- 7
+                     "0111" when silencio_acertou_tr,-- 7
+                     "1001" when silencio_errou_tr,  -- 9
                      "1000" when fim_tr,             -- 8
                      "1010" when espera_acertou_tr,  -- A
                      "1100" when toca_tr,            -- C
