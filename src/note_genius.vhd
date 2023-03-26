@@ -203,21 +203,20 @@ begin
     not_iniciar <= not iniciar;
     not_chaves <= not chaves;
 
-    clk1khz <= clock; -- REMOVE
     -- clock divider
-    --CLKDIV: contador_m_maior
-    --generic map (
-    --    M => 100000 -- generate 1khz clock
-    --)
-    --port map (
-    --    clock => clock,
-    --    zera_as => '0', 
-    --    zera_s => '0',
-    --    conta => '1',
-    --    Q => open,
-    --    fim => open,
-    --    meio => clk1khz
-    --);
+    CLKDIV: contador_m_maior
+    generic map (
+        M => 100000 -- generate 1khz clock
+    )
+    port map (
+        clock => clock,
+        zera_as => '0', 
+        zera_s => '0',
+        conta => '1',
+        Q => open,
+        fim => open,
+        meio => clk1khz
+    );
 
     UC: unidade_controle
     port map (
@@ -256,6 +255,10 @@ begin
     );
 	
     DF: fluxo_dados
+    generic map (
+        timer_silencio_len => 500,
+        timer_nota_len => 1000
+    )
     port map (
         clock => clk1khz,
         zera_contjog => s_zera_contjog,

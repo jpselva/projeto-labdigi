@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Sat Mar 25 14:47:00 2023
+# Generated on: Sat Mar 25 20:58:30 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -46,6 +46,9 @@ if {$make_assignments} {
 	set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
 	set_global_assignment -name PROJECT_CREATION_TIME_DATE "19:11:23  MARçO 23, 2023"
 	set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
+	set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+	set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
 	set_global_assignment -name VHDL_FILE src/shift_register.vhd
 	set_global_assignment -name VHDL_FILE src/registrador_n.vhd
@@ -75,9 +78,6 @@ if {$make_assignments} {
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-	set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-	set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-	set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
 	set_global_assignment -name TIMING_ANALYZER_REPORT_WORST_CASE_TIMING_PATHS OFF -family "MAX 10"
 	set_global_assignment -name TIMING_ANALYZER_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
@@ -94,7 +94,6 @@ if {$make_assignments} {
 	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
 	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
 	set_location_assignment PIN_B8 -to reset
-	set_location_assignment PIN_B12 -to iniciar_tradicional
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
 	set_location_assignment PIN_W10 -to chaves[0]
@@ -131,13 +130,6 @@ if {$make_assignments} {
 	set_location_assignment PIN_M20 -to db_rodada[4]
 	set_location_assignment PIN_N19 -to db_rodada[5]
 	set_location_assignment PIN_N20 -to db_rodada[6]
-	set_location_assignment PIN_F18 -to db_nota_aleatoria[0]
-	set_location_assignment PIN_E20 -to db_nota_aleatoria[1]
-	set_location_assignment PIN_E19 -to db_nota_aleatoria[2]
-	set_location_assignment PIN_J18 -to db_nota_aleatoria[3]
-	set_location_assignment PIN_H19 -to db_nota_aleatoria[4]
-	set_location_assignment PIN_F19 -to db_nota_aleatoria[5]
-	set_location_assignment PIN_F20 -to db_nota_aleatoria[6]
 	set_location_assignment PIN_F21 -to db_jogada[0]
 	set_location_assignment PIN_E22 -to db_jogada[1]
 	set_location_assignment PIN_E21 -to db_jogada[2]
@@ -159,6 +151,15 @@ if {$make_assignments} {
 	set_location_assignment PIN_A8 -to pronto
 	set_location_assignment PIN_B11 -to db_toca_nota
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+	set_location_assignment PIN_F18 -to db_nota_correta[0]
+	set_location_assignment PIN_E20 -to db_nota_correta[1]
+	set_location_assignment PIN_E19 -to db_nota_correta[2]
+	set_location_assignment PIN_J18 -to db_nota_correta[3]
+	set_location_assignment PIN_H19 -to db_nota_correta[4]
+	set_location_assignment PIN_F19 -to db_nota_correta[5]
+	set_location_assignment PIN_F20 -to db_nota_correta[6]
+	set_location_assignment PIN_A12 -to sel_modo[0]
+	set_location_assignment PIN_B12 -to sel_modo[1]
 
 	# Including default assignments
 
