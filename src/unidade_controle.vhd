@@ -276,7 +276,7 @@ begin
             when espera_pr =>
                 zera_tnota <= '1';
 
-                if ( iniciar = '1' ) then
+                if ( iniciar_edge = '1' ) then
                     Eprox <= preparacao;
                 elsif ( jogada_feita = '1' ) then
                     Eprox <= registra_pr;

@@ -14,25 +14,19 @@ entity note_genius is
         sel_modo            : in std_logic_vector (1 downto 0);
 
         -- outputs
-        erros        : out std_logic_vector (13 downto 0);
         pronto       : out std_logic;
         sinal_buzzer : out std_logic;
 
         -- messages
-        msg_hex0          : out std_logic_vector (6 downto 0);
-        msg_hex1          : out std_logic_vector (6 downto 0);
-        msg_hex2          : out std_logic_vector (6 downto 0);
-        msg_hex3          : out std_logic_vector (6 downto 0);
-        msg_hex4          : out std_logic_vector (6 downto 0);
-        msg_hex5          : out std_logic_vector (6 downto 0);
+        msg_hex0          : out std_logic_vector (6 downto 0); -- erro
+        msg_hex1          : out std_logic_vector (6 downto 0); -- erro
+        msg_hex2          : out std_logic_vector (6 downto 0); -- db_estado
+        msg_hex3          : out std_logic_vector (6 downto 0); -- db_jogada
+        msg_hex4          : out std_logic_vector (6 downto 0); -- db_jogada_correta
+        msg_hex5          : out std_logic_vector (6 downto 0); -- db_rodada
 
-        -- debug
-        db_estado         : out std_logic_vector (6 downto 0);
-        db_jogada         : out std_logic_vector (6 downto 0);
-        db_nota_correta : out std_logic_vector (6 downto 0);
-        db_rodada         : out std_logic_vector (6 downto 0);
+        -- other debug signals
         db_toca_nota      : out std_logic;
-        db_nota           : out std_logic_vector (11 downto 0);
 
         -- simulacao
         tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
@@ -40,6 +34,9 @@ entity note_genius is
 end entity;
 
 architecture arch of note_genius is
+    constant IS_SIMULATION : boolean := false; -- set to true when simulating
+    constant IS_7SEG_DEBUG : boolean := false; -- set to true when debugging with 7seg
+
     component hexa7seg is
       port (
           hexa : in  std_logic_vector(3 downto 0);
@@ -228,19 +225,25 @@ begin
     not_chaves <= not chaves;
 
     -- clock divider
-    CLKDIV: contador_m_maior 
-    generic map (
-        M => 100000 -- generate 1khz clock
-    )
-    port map (
-        clock => clock,
-        zera_as => '0', 
-        zera_s => '0',
-        conta => '1',
-        Q => open,
-        fim => open,
-        meio => clk1khz
-    );
+    SYNTHCLK: if not IS_SIMULATION generate
+        CLKDIV: contador_m_maior 
+        generic map (
+            M => 100000 -- generate 1khz clock
+        )
+        port map (
+            clock => clock,
+            zera_as => '0', 
+            zera_s => '0',
+            conta => '1',
+            Q => open,
+            fim => open,
+            meio => clk1khz
+        );
+    end generate;
+
+    SIMCLK: if IS_SIMULATION generate
+        clk1khz <= clock;
+    end generate;
 
     UC: unidade_controle
     port map (
@@ -278,45 +281,88 @@ begin
         msg_end => s_msg_end,
         lfsr_compativel => s_lfsr_compativel
     );
-	
-    DF: fluxo_dados
-    generic map (
-        timer_silencio_len => 500,
-        timer_nota_len => 1000
-    )
-    port map (
-        clock => clk1khz,
-        zera_contjog => s_zera_contjog,
-        conta_contjog => s_conta_contjog,
-        zera_regnota => s_zera_regnota,
-        registra_regnota => s_registra_regnota,
-        chaves => not_chaves,
-        zera_regmasc => s_zera_regmasc,
-        registra_regmasc => s_registra_regmasc,
-        masc_dado => s_masc_dado,
-        nota_src => s_nota_src,
-        zera_conterros => s_zera_conterros,
-        conta_conterros => s_conta_conterros,
-        zera_detec => s_zera_detec,
-        zera_tnota => s_zera_tnota,
-        conta_tnota => s_conta_tnota,
-        zera_tsil => s_zera_tsil,
-        conta_tsil => s_conta_tsil,
-        fim_contjog => s_fim_contjog,
-        nota => s_nota,
-        erros => s_erros,
-        jogada_feita => s_jogada_feita,
-        timeout_tnota => s_timeout_tnota,
-        timeout_tsil => s_timeout_tsil,
-        db_jogada => s_db_jogada,
-        db_rodada => s_db_rodada,
-        lfsr_compativel => s_lfsr_compativel,
-        reset_lfsr => s_reset_lfsr,
-        shift_lfsr => s_shift_lfsr,
-        registra_reg_nota_corr => s_registra_reg_nota_corr,
-        db_nota_correta => s_db_nota_correta,
-        jogada_correta => s_jogada_correta
-    );
+
+    SYNTHDF: if not IS_SIMULATION generate
+        DF: fluxo_dados
+        generic map (
+            timer_silencio_len => 500,
+            timer_nota_len => 1000
+        )
+        port map (
+            clock => clk1khz,
+            zera_contjog => s_zera_contjog,
+            conta_contjog => s_conta_contjog,
+            zera_regnota => s_zera_regnota,
+            registra_regnota => s_registra_regnota,
+            chaves => not_chaves,
+            zera_regmasc => s_zera_regmasc,
+            registra_regmasc => s_registra_regmasc,
+            masc_dado => s_masc_dado,
+            nota_src => s_nota_src,
+            zera_conterros => s_zera_conterros,
+            conta_conterros => s_conta_conterros,
+            zera_detec => s_zera_detec,
+            zera_tnota => s_zera_tnota,
+            conta_tnota => s_conta_tnota,
+            zera_tsil => s_zera_tsil,
+            conta_tsil => s_conta_tsil,
+            fim_contjog => s_fim_contjog,
+            nota => s_nota,
+            erros => s_erros,
+            jogada_feita => s_jogada_feita,
+            timeout_tnota => s_timeout_tnota,
+            timeout_tsil => s_timeout_tsil,
+            db_jogada => s_db_jogada,
+            db_rodada => s_db_rodada,
+            lfsr_compativel => s_lfsr_compativel,
+            reset_lfsr => s_reset_lfsr,
+            shift_lfsr => s_shift_lfsr,
+            registra_reg_nota_corr => s_registra_reg_nota_corr,
+            db_nota_correta => s_db_nota_correta,
+            jogada_correta => s_jogada_correta
+        );
+    end generate;
+
+    SIMDF: if IS_SIMULATION generate
+        DF: fluxo_dados
+        generic map (
+            timer_silencio_len => 5,
+            timer_nota_len => 10
+        )
+        port map (
+            clock => clk1khz,
+            zera_contjog => s_zera_contjog,
+            conta_contjog => s_conta_contjog,
+            zera_regnota => s_zera_regnota,
+            registra_regnota => s_registra_regnota,
+            chaves => not_chaves,
+            zera_regmasc => s_zera_regmasc,
+            registra_regmasc => s_registra_regmasc,
+            masc_dado => s_masc_dado,
+            nota_src => s_nota_src,
+            zera_conterros => s_zera_conterros,
+            conta_conterros => s_conta_conterros,
+            zera_detec => s_zera_detec,
+            zera_tnota => s_zera_tnota,
+            conta_tnota => s_conta_tnota,
+            zera_tsil => s_zera_tsil,
+            conta_tsil => s_conta_tsil,
+            fim_contjog => s_fim_contjog,
+            nota => s_nota,
+            erros => s_erros,
+            jogada_feita => s_jogada_feita,
+            timeout_tnota => s_timeout_tnota,
+            timeout_tsil => s_timeout_tsil,
+            db_jogada => s_db_jogada,
+            db_rodada => s_db_rodada,
+            lfsr_compativel => s_lfsr_compativel,
+            reset_lfsr => s_reset_lfsr,
+            shift_lfsr => s_shift_lfsr,
+            registra_reg_nota_corr => s_registra_reg_nota_corr,
+            db_nota_correta => s_db_nota_correta,
+            jogada_correta => s_jogada_correta
+        );
+    end generate;
 
     GERFREQ: gerador_freq
       port map (
@@ -326,72 +372,75 @@ begin
         saida => sinal_buzzer
       );
 
-    s_erros_pad <= "0"&s_erros;
-    s_db_jogada_pad <= "0000"&s_db_jogada;
-    s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
+    SEG7DB: if IS_7SEG_DEBUG generate
+        s_erros_pad <= "0"&s_erros;
+        s_db_jogada_pad <= "0000"&s_db_jogada;
+        s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
 
-    HEX_ESTADO: hexa7seg
-    port map(
-      hexa => s_db_estado,
-      sseg => db_estado
-    );
+        ENC_JOG: encoder16x4         
+        port map (
+            I => s_db_jogada_pad,
+            O => s_db_jogada_enc
+        );
 
-    HEX_ENDERECO: hexa7seg
-    port map(
-      hexa => s_db_rodada,
-      sseg => db_rodada
-    );
+        ENC_MEM: encoder16x4         
+        port map (
+            I => s_db_nota_correta_pad,
+            O => s_db_nota_correta_enc
+        );
 
-    HEX_ERROS1: hexa7seg -- Lower 4 bits
-    port map (
-      hexa => s_erros_pad(3 downto 0),
-      sseg => erros(6 downto 0)
-    );
+        HEX_ERROS1: hexa7seg -- Lower 4 bits
+        port map (
+          hexa => s_erros_pad(3 downto 0),
+          sseg => msg_hex0 
+        );
 
-    HEX_ERROS2: hexa7seg -- Upper 3 bits
-    port map (
-      hexa => s_erros_pad(7 downto 4),
-      sseg => erros(13 downto 7)
-    );
+        HEX_ERROS2: hexa7seg -- Upper 3 bits
+        port map (
+          hexa => s_erros_pad(7 downto 4),
+          sseg => msg_hex1
+        );
 
-    ENC_JOG: encoder16x4         
-    port map (
-        I => s_db_jogada_pad,
-        O => s_db_jogada_enc
-    );
-
-    ENC_MEM: encoder16x4         
-    port map (
-        I => s_db_nota_correta_pad,
-        O => s_db_nota_correta_enc
-    );
-
-    HEX_JOG: hexa7seg
-    port map (
-      hexa => s_db_jogada_enc, 
-      sseg => db_jogada 
-    );
-
-    HEX_MEM: hexa7seg
-    port map (
-      hexa => s_db_nota_correta_enc, 
-      sseg => db_nota_correta
-    );
-
-    msgGen: msg_generator 
+        HEX_ESTADO: hexa7seg
         port map(
-          erros    => s_erros,
-          rodada   => s_db_rodada,
-          msg_end  => s_msg_end,
-          hex0     => msg_hex0,
-          hex1     => msg_hex1,
-          hex2     => msg_hex2,
-          hex3     => msg_hex3,
-          hex4     => msg_hex4,
-          hex5     => msg_hex5
-        ) ;
+          hexa => s_db_estado,
+          sseg => msg_hex2
+        );
+
+        HEX_JOG: hexa7seg
+        port map (
+          hexa => s_db_jogada_enc, 
+          sseg => msg_hex3
+        );
+
+        HEX_MEM: hexa7seg
+        port map (
+          hexa => s_db_nota_correta_enc, 
+          sseg => msg_hex4
+        );
+
+        HEX_ENDERECO: hexa7seg
+        port map(
+          hexa => s_db_rodada,
+          sseg => msg_hex5
+        );
+    end generate;
+
+    SEG7MSG: if not IS_7SEG_DEBUG generate
+        msgGen: msg_generator 
+        port map (
+            erros    => s_erros,
+            rodada   => s_db_rodada,
+            msg_end  => s_msg_end,
+            hex0     => msg_hex0,
+            hex1     => msg_hex1,
+            hex2     => msg_hex2,
+            hex3     => msg_hex3,
+            hex4     => msg_hex4,
+            hex5     => msg_hex5
+        );
+    end generate;
 
     tb_nota_correta_raw <= s_db_nota_correta;
-    db_nota <= s_nota;
     db_toca_nota <= s_toca_nota;
 end architecture;

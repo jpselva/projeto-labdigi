@@ -15,28 +15,22 @@ architecture tb of note_genius_tb1 is
             chaves              : in std_logic_vector (11 downto 0);
             sel_dificuldade     : in std_logic_vector (3 downto 0);
             sel_modo            : in std_logic_vector (1 downto 0);
-    
+
             -- outputs
-            erros        : out std_logic_vector (13 downto 0);
             pronto       : out std_logic;
             sinal_buzzer : out std_logic;
-    
+
             -- messages
-            msg_hex0          : out std_logic_vector (6 downto 0);
-            msg_hex1          : out std_logic_vector (6 downto 0);
-            msg_hex2          : out std_logic_vector (6 downto 0);
-            msg_hex3          : out std_logic_vector (6 downto 0);
-            msg_hex4          : out std_logic_vector (6 downto 0);
-            msg_hex5          : out std_logic_vector (6 downto 0);
-    
-            -- debug
-            db_estado         : out std_logic_vector (6 downto 0);
-            db_jogada         : out std_logic_vector (6 downto 0);
-            db_nota_correta : out std_logic_vector (6 downto 0);
-            db_rodada         : out std_logic_vector (6 downto 0);
+            msg_hex0          : out std_logic_vector (6 downto 0); -- erro
+            msg_hex1          : out std_logic_vector (6 downto 0); -- erro
+            msg_hex2          : out std_logic_vector (6 downto 0); -- db_estado
+            msg_hex3          : out std_logic_vector (6 downto 0); -- db_jogada
+            msg_hex4          : out std_logic_vector (6 downto 0); -- db_jogada_correta
+            msg_hex5          : out std_logic_vector (6 downto 0); -- db_rodada
+
+            -- other debug signals
             db_toca_nota      : out std_logic;
-            db_nota           : out std_logic_vector (11 downto 0);
-    
+
             -- simulacao
             tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
         );
@@ -51,13 +45,8 @@ architecture tb of note_genius_tb1 is
     signal erros               : std_logic_vector (13 downto 0);
     signal pronto              : std_logic;
     signal sinal_buzzer        : std_logic;
-    signal db_estado           : std_logic_vector (6 downto 0);
-    signal db_jogada           : std_logic_vector (6 downto 0);
-    signal db_nota_correta     : std_logic_vector (6 downto 0);
-    signal db_rodada           : std_logic_vector (6 downto 0);
-    signal db_toca_nota        : std_logic;
-    signal db_nota             : std_logic_vector (11 downto 0);
     signal tb_nota_correta_raw : std_logic_vector (11 downto 0);
+    signal db_toca_nota        : std_logic;
 
     constant TbPeriod : time := 1000 ns; -- EDIT Put right period here
     signal TbClock : std_logic := '0';
@@ -73,15 +62,9 @@ begin
         chaves => chaves,
         sel_dificuldade => sel_dificuldade,
         sel_modo => sel_modo,
-        erros => erros,
         pronto => pronto,
         sinal_buzzer => sinal_buzzer,
-        db_estado => db_estado,
-        db_jogada => db_jogada,
-        db_nota_correta => db_nota_correta,
-        db_rodada => db_rodada,
         db_toca_nota => db_toca_nota,
-        db_nota => db_nota,
         tb_nota_correta_raw => tb_nota_correta_raw,
         msg_hex0 => open,
         msg_hex1 => open,
