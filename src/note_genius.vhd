@@ -7,34 +7,35 @@ entity note_genius is
     port (
         -- inputs
         clock               : in std_logic;
-        clock_nota          : in std_logic;
         reset               : in std_logic; -- ativo baixo
         iniciar             : in std_logic; -- ativo baixo
         chaves              : in std_logic_vector (11 downto 0);
-        iniciar_tradicional : in std_logic; -- ativo baixo
         sel_dificuldade     : in std_logic_vector (3 downto 0);
+        sel_modo            : in std_logic_vector (1 downto 0);
 
         -- outputs
-        erros        : out std_logic_vector (13 downto 0);
         pronto       : out std_logic;
         sinal_buzzer : out std_logic;
 
-        -- debug
-        db_estado         : out std_logic_vector (6 downto 0);
-        db_jogada         : out std_logic_vector (6 downto 0);
-        db_nota_aleatoria : out std_logic_vector (6 downto 0);
-        db_rodada         : out std_logic_vector (6 downto 0);
+        -- messages
+        msg_hex0          : out std_logic_vector (6 downto 0); -- erro
+        msg_hex1          : out std_logic_vector (6 downto 0); -- erro
+        msg_hex2          : out std_logic_vector (6 downto 0); -- db_estado
+        msg_hex3          : out std_logic_vector (6 downto 0); -- db_jogada
+        msg_hex4          : out std_logic_vector (6 downto 0); -- db_jogada_correta
+        msg_hex5          : out std_logic_vector (6 downto 0); -- db_rodada
+
+        -- other debug signals
         db_toca_nota      : out std_logic;
-        db_nota           : out std_logic_vector (11 downto 0);
 
         -- simulacao
-        tb_nota_aleatoria_raw     : out std_logic_vector (11 downto 0)
+        tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
     );
 end entity;
 
 architecture arch of note_genius is
-    -- SET TO FALSE WHEN NOT SIMULATING
-    constant is_simulation : boolean := false; 
+    constant IS_SIMULATION : boolean := false; -- set to true when simulating
+    constant IS_7SEG_DEBUG : boolean := false; -- set to true when debugging with 7seg
 
     component hexa7seg is
       port (
@@ -52,83 +53,117 @@ architecture arch of note_genius is
 
     component unidade_controle is 
         port ( 
-            clock               : in  std_logic; 
-            reset               : in  std_logic; 
-            iniciar             : in  std_logic;
-            iniciar_tradicional : in  std_logic;
-            jogada_feita        : in  std_logic;
-            jogada_correta      : in  std_logic;
-            fim_contjog         : in  std_logic;
-            timeout_tnota       : in  std_logic;
-            timeout_tsil        : in  std_logic;
-            zera_contjog        : out std_logic;
-            conta_contjog       : out std_logic;
-            zera_regnota        : out std_logic;
-            registra_regnota    : out std_logic;
-            zera_regmasc        : out std_logic;
-            registra_regmasc    : out std_logic;
-            masc_dado           : out std_logic_vector(11 downto 0);
-            nota_src            : out std_logic;
-            zera_conterros      : out std_logic;
-            conta_conterros     : out std_logic;
-            zera_tnota          : out std_logic;
-            conta_tnota         : out std_logic;
-            zera_tsil           : out std_logic;
-            conta_tsil          : out std_logic;
-            zera_detec          : out std_logic;
-            toca_nota           : out std_logic;
-            pronto              : out std_logic;
-            randomiza_nota      : out std_logic;
-            reset_gera_nota     : out std_logic;
-            db_estado           : out std_logic_vector(3 downto 0);
-            sel_dificuldade     : in  std_logic_vector(3 downto 0)
+            clock                  :  in std_logic; 
+            reset                  :  in std_logic; 
+            iniciar                :  in std_logic;
+            jogada_feita           :  in std_logic;
+            jogada_correta         :  in std_logic;
+            fim_contjog            :  in std_logic;
+            timeout_tnota          :  in std_logic;
+            timeout_tsil           :  in std_logic;
+            sel_modo               :  in std_logic_vector(1 downto 0);
+            sel_dificuldade        :  in std_logic_vector(3 downto 0);
+            lfsr_compativel        :  in std_logic;
+            zera_contjog           : out std_logic;
+            conta_contjog          : out std_logic;
+            zera_regnota           : out std_logic;
+            registra_regnota       : out std_logic;
+            zera_regmasc           : out std_logic;
+            registra_regmasc       : out std_logic;
+            masc_dado              : out std_logic_vector(11 downto 0);
+            nota_src               : out std_logic;
+            zera_conterros         : out std_logic;
+            conta_conterros        : out std_logic;
+            zera_tnota             : out std_logic;
+            conta_tnota            : out std_logic;
+            zera_tsil              : out std_logic;
+            conta_tsil             : out std_logic;
+            zera_detec             : out std_logic;
+            toca_nota              : out std_logic;
+            pronto                 : out std_logic;
+            reset_lfsr             : out std_logic;
+            shift_lfsr             : out std_logic;
+            registra_reg_nota_corr : out std_logic;
+            msg_end                : out std_logic_vector(3 downto 0);
+            db_estado              : out std_logic_vector(3 downto 0)
         );
-    end component;
+    end component ;
 
     component fluxo_dados is
         generic (
-            timer_silencio_len  : integer := 500;
-            timer_nota_len      : integer := 1000
+            timer_silencio_len  : integer := 5;
+            timer_nota_len      : integer := 10
         );
         port (
-            clock               : in  std_logic;
-            zera_contjog        : in  std_logic;
-            conta_contjog       : in  std_logic;
-            zera_regnota        : in  std_logic;
-            registra_regnota    : in  std_logic;
-            chaves              : in  std_logic_vector (11 downto 0);
-            zera_regmasc        : in  std_logic;
-            registra_regmasc    : in  std_logic;
-            masc_dado           : in  std_logic_vector (11 downto 0);
-            nota_src            : in  std_logic;
-            zera_conterros      : in  std_logic;
-            conta_conterros     : in  std_logic;
-            zera_detec          : in  std_logic;
-            zera_tnota          : in  std_logic;
-            conta_tnota         : in  std_logic;
-            zera_tsil           : in  std_logic;
-            conta_tsil          : in  std_logic;
-            reset_gera_nota     : in  std_logic;
-            randomiza_nota      : in  std_logic;
-            fim_contjog         : out std_logic;
-            jogada_correta      : out std_logic;
-            nota                : out std_logic_vector (11 downto 0);
-            erros               : out std_logic_vector (6  downto 0);
-            jogada_feita        : out std_logic;
-            timeout_tnota       : out std_logic;
-            timeout_tsil        : out std_logic;
-            db_jogada           : out std_logic_vector (11 downto 0);
-            db_nota_aleatoria   : out std_logic_vector (11 downto 0);
-            db_rodada           : out std_logic_vector (3  downto 0)
+            clock                  : in  std_logic;
+            zera_contjog           : in  std_logic;
+            conta_contjog          : in  std_logic;
+            zera_regnota           : in  std_logic;
+            registra_regnota       : in  std_logic;
+            chaves                 : in  std_logic_vector (11 downto 0);
+            zera_regmasc           : in  std_logic;
+            registra_regmasc       : in  std_logic;
+            masc_dado              : in  std_logic_vector (11 downto 0);
+            nota_src               : in  std_logic;
+            zera_conterros         : in  std_logic;
+            conta_conterros        : in  std_logic;
+            zera_detec             : in  std_logic;
+            zera_tnota             : in  std_logic;
+            conta_tnota            : in  std_logic;
+            zera_tsil              : in  std_logic;
+            conta_tsil             : in  std_logic;
+            reset_lfsr             : in  std_logic;
+            shift_lfsr             : in  std_logic;
+            registra_reg_nota_corr : in  std_logic;
+            fim_contjog            : out std_logic;
+            jogada_correta         : out std_logic;
+            nota                   : out std_logic_vector (11 downto 0);
+            erros                  : out std_logic_vector (6  downto 0);
+            jogada_feita           : out std_logic;
+            timeout_tnota          : out std_logic;
+            timeout_tsil           : out std_logic;
+            db_jogada              : out std_logic_vector (11 downto 0);
+            db_nota_correta        : out std_logic_vector (11 downto 0);
+            db_rodada              : out std_logic_vector (3  downto 0);
+            lfsr_compativel        : out std_logic
         );
     end component;
 
     component gerador_freq is
+      port (
+            clock 		: in  std_logic;
+            nota 	    : in  std_logic_vector(11 downto 0);
+            toca_nota   : in std_logic;
+            saida 		: out std_logic
+        );
+    end component;
+
+    component contador_m_maior is
+        generic (
+            constant M: integer := 100 -- modulo do contador
+        );
         port (
-            clock     : in  std_logic;
-            nota 	  : in  std_logic_vector(11 downto 0);
-            toca_nota : in std_logic;
-            saida 	  : out std_logic
+            clock   : in  std_logic;
+            zera_as : in  std_logic;
+            zera_s  : in  std_logic;
+            conta   : in  std_logic;
+            Q       : out std_logic_vector(natural(ceil(log2(real(M))))-1 downto 0);
+            fim     : out std_logic;
+            meio    : out std_logic
+        );
+    end component;
+
+    component msg_generator is
+        port (
+          erros   : in  std_logic_vector( 6 downto 0);
+          rodada  : in  std_logic_vector( 3 downto 0);
+          msg_end : in  std_logic_vector( 3 downto 0);
+          hex0    : out std_logic_vector( 6 downto 0);
+          hex1    : out std_logic_vector( 6 downto 0);
+          hex2    : out std_logic_vector( 6 downto 0);
+          hex3    : out std_logic_vector( 6 downto 0);
+          hex4    : out std_logic_vector( 6 downto 0);
+          hex5    : out std_logic_vector( 6 downto 0)
         );
     end component;
 
@@ -155,41 +190,67 @@ architecture arch of note_genius is
     signal s_zera_tsil         : std_logic;
     signal s_conta_tsil        : std_logic;
     signal s_zera_detec        : std_logic;
-    signal s_randomiza_nota    : std_logic;
-    signal s_reset_gera_nota   : std_logic;
-    signal s_db_nota_aleatoria : std_logic_vector (11 downto 0);
+    signal s_db_nota_correta   : std_logic_vector (11 downto 0);
     signal s_nota              : std_logic_vector (11 downto 0);
     signal s_erros             : std_logic_vector (6 downto 0);
     signal s_db_jogada         : std_logic_vector (11 downto 0);
     signal s_db_rodada         : std_logic_vector (3 downto 0);
     signal s_db_estado         : std_logic_vector (3 downto 0);
+    signal s_msg_end           : std_logic_vector (3 downto 0);
     signal s_toca_nota         : std_logic;
+    signal s_shift_lfsr        : std_logic;
+    signal s_reset_lfsr        : std_logic;
+    signal s_registra_reg_nota_corr : std_logic;
+    signal s_lfsr_compativel   : std_logic;
+
+    signal clk1khz             : std_logic; -- clock corrected to 1khz
+    signal not_reset           : std_logic;
+    signal not_iniciar         : std_logic;
+    signal not_chaves          : std_logic_vector(11 downto 0);
 
     ---------------------------------------------
     -- other signals
     ---------------------------------------------
     -- signals padded with zeros in front
-    signal s_erros_pad             : std_logic_vector (7 downto 0);
-    signal s_db_jogada_pad         : std_logic_vector(15 downto 0);
-    signal s_db_nota_aleatoria_pad : std_logic_vector(15 downto 0);
+    signal s_erros_pad : std_logic_vector (7 downto 0);
+    signal s_db_jogada_pad : std_logic_vector(15 downto 0);
+    signal s_db_nota_correta_pad : std_logic_vector(15 downto 0);
 
-    signal s_db_nota_aleatoria_enc : std_logic_vector (3 downto 0);
-    signal s_db_jogada_enc         : std_logic_vector (3 downto 0);
-
-	 signal not_reset : std_logic;
-	 signal not_iniciar : std_logic;
-	 signal not_iniciar_tradicional : std_logic;
+    -- signals that come from encoders
+    signal s_db_nota_correta_enc : std_logic_vector (3 downto 0);
+    signal s_db_jogada_enc : std_logic_vector (3 downto 0);
 begin
-	not_reset <= not reset;
-	not_iniciar <= not iniciar;
-	not_iniciar_tradicional <= not iniciar_tradicional;
+    not_reset <= not reset;
+    not_iniciar <= not iniciar;
+    not_chaves <= not chaves;
+
+    -- clock divider
+    SYNTHCLK: if not IS_SIMULATION generate
+        CLKDIV: contador_m_maior 
+        generic map (
+            M => 100000 -- generate 1khz clock
+        )
+        port map (
+            clock => clock,
+            zera_as => '0', 
+            zera_s => '0',
+            conta => '1',
+            Q => open,
+            fim => open,
+            meio => clk1khz
+        );
+    end generate;
+
+    SIMCLK: if IS_SIMULATION generate
+        clk1khz <= clock;
+    end generate;
 
     UC: unidade_controle
     port map (
-        clock => clock,
+        clock => clk1khz,
         reset => not_reset,
         iniciar => not_iniciar,
-        iniciar_tradicional => not_iniciar_tradicional,
+        sel_modo => sel_modo,
         jogada_feita => s_jogada_feita,
         jogada_correta => s_jogada_correta,
         fim_contjog => s_fim_contjog,
@@ -212,26 +273,28 @@ begin
         zera_detec => s_zera_detec,
         toca_nota => s_toca_nota,
         pronto => pronto,
-        randomiza_nota => s_randomiza_nota,
-        reset_gera_nota => s_reset_gera_nota,
+        reset_lfsr => s_reset_lfsr,
+        shift_lfsr => s_shift_lfsr,
+        registra_reg_nota_corr => s_registra_reg_nota_corr,
         db_estado => s_db_estado,
-        sel_dificuldade => sel_dificuldade
+        sel_dificuldade => sel_dificuldade,
+        msg_end => s_msg_end,
+        lfsr_compativel => s_lfsr_compativel
     );
 
-    -- change timer sizes to speedup simulation
-    SIMDF: if is_simulation generate
+    SYNTHDF: if not IS_SIMULATION generate
         DF: fluxo_dados
         generic map (
-            timer_silencio_len => 10,
-            timer_nota_len => 5
+            timer_silencio_len => 500,
+            timer_nota_len => 1000
         )
         port map (
-            clock => clock,
+            clock => clk1khz,
             zera_contjog => s_zera_contjog,
             conta_contjog => s_conta_contjog,
             zera_regnota => s_zera_regnota,
             registra_regnota => s_registra_regnota,
-            chaves => chaves,
+            chaves => not_chaves,
             zera_regmasc => s_zera_regmasc,
             registra_regmasc => s_registra_regmasc,
             masc_dado => s_masc_dado,
@@ -243,30 +306,36 @@ begin
             conta_tnota => s_conta_tnota,
             zera_tsil => s_zera_tsil,
             conta_tsil => s_conta_tsil,
-            reset_gera_nota => s_reset_gera_nota,
-            randomiza_nota => s_randomiza_nota,
             fim_contjog => s_fim_contjog,
-            jogada_correta => s_jogada_correta,
             nota => s_nota,
             erros => s_erros,
             jogada_feita => s_jogada_feita,
             timeout_tnota => s_timeout_tnota,
             timeout_tsil => s_timeout_tsil,
             db_jogada => s_db_jogada,
-            db_nota_aleatoria => s_db_nota_aleatoria,
-            db_rodada => s_db_rodada
+            db_rodada => s_db_rodada,
+            lfsr_compativel => s_lfsr_compativel,
+            reset_lfsr => s_reset_lfsr,
+            shift_lfsr => s_shift_lfsr,
+            registra_reg_nota_corr => s_registra_reg_nota_corr,
+            db_nota_correta => s_db_nota_correta,
+            jogada_correta => s_jogada_correta
         );
     end generate;
 
-    SYNTHDF: if not is_simulation generate
+    SIMDF: if IS_SIMULATION generate
         DF: fluxo_dados
+        generic map (
+            timer_silencio_len => 5,
+            timer_nota_len => 10
+        )
         port map (
-            clock => clock,
+            clock => clk1khz,
             zera_contjog => s_zera_contjog,
             conta_contjog => s_conta_contjog,
             zera_regnota => s_zera_regnota,
             registra_regnota => s_registra_regnota,
-            chaves => chaves,
+            chaves => not_chaves,
             zera_regmasc => s_zera_regmasc,
             registra_regmasc => s_registra_regmasc,
             masc_dado => s_masc_dado,
@@ -278,82 +347,100 @@ begin
             conta_tnota => s_conta_tnota,
             zera_tsil => s_zera_tsil,
             conta_tsil => s_conta_tsil,
-            reset_gera_nota => s_reset_gera_nota,
-            randomiza_nota => s_randomiza_nota,
             fim_contjog => s_fim_contjog,
-            jogada_correta => s_jogada_correta,
             nota => s_nota,
             erros => s_erros,
             jogada_feita => s_jogada_feita,
             timeout_tnota => s_timeout_tnota,
             timeout_tsil => s_timeout_tsil,
             db_jogada => s_db_jogada,
-            db_nota_aleatoria => s_db_nota_aleatoria,
-            db_rodada => s_db_rodada
+            db_rodada => s_db_rodada,
+            lfsr_compativel => s_lfsr_compativel,
+            reset_lfsr => s_reset_lfsr,
+            shift_lfsr => s_shift_lfsr,
+            registra_reg_nota_corr => s_registra_reg_nota_corr,
+            db_nota_correta => s_db_nota_correta,
+            jogada_correta => s_jogada_correta
         );
     end generate;
 
     GERFREQ: gerador_freq
-    port map (
-        clock => clock_nota,
+      port map (
+        clock => clock,
         nota => s_nota,
         toca_nota => s_toca_nota,
         saida => sinal_buzzer
-    );
+      );
 
-    s_erros_pad <= "0"&s_erros;
-    s_db_jogada_pad <= "0000"&s_db_jogada;
-    s_db_nota_aleatoria_pad <= "0000"&s_db_nota_aleatoria;
+    SEG7DB: if IS_7SEG_DEBUG generate
+        s_erros_pad <= "0"&s_erros;
+        s_db_jogada_pad <= "0000"&s_db_jogada;
+        s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
 
-    HEX_ESTADO: hexa7seg
-    port map(
-        hexa => s_db_estado,
-        sseg => db_estado
-    );
+        ENC_JOG: encoder16x4         
+        port map (
+            I => s_db_jogada_pad,
+            O => s_db_jogada_enc
+        );
 
-    HEX_ENDERECO: hexa7seg
-    port map(
-        hexa => s_db_rodada,
-        sseg => db_rodada
-    );
+        ENC_MEM: encoder16x4         
+        port map (
+            I => s_db_nota_correta_pad,
+            O => s_db_nota_correta_enc
+        );
 
-    HEX_ERROS1: hexa7seg -- Lower 4 bits
-    port map (
-        hexa => s_erros_pad(3 downto 0),
-        sseg => erros(6 downto 0)
-    );
+        HEX_ERROS1: hexa7seg -- Lower 4 bits
+        port map (
+          hexa => s_erros_pad(3 downto 0),
+          sseg => msg_hex0 
+        );
 
-    HEX_ERROS2: hexa7seg -- Upper 3 bits
-    port map (
-        hexa => s_erros_pad(7 downto 4),
-        sseg => erros(13 downto 7)
-    );
+        HEX_ERROS2: hexa7seg -- Upper 3 bits
+        port map (
+          hexa => s_erros_pad(7 downto 4),
+          sseg => msg_hex1
+        );
 
-    ENC_JOG: encoder16x4         
-    port map (
-        I => s_db_jogada_pad,
-        O => s_db_jogada_enc
-    );
+        HEX_ESTADO: hexa7seg
+        port map(
+          hexa => s_db_estado,
+          sseg => msg_hex2
+        );
 
-    ENC_MEM: encoder16x4         
-    port map (
-        I => s_db_nota_aleatoria_pad,
-        O => s_db_nota_aleatoria_enc
-    );
+        HEX_JOG: hexa7seg
+        port map (
+          hexa => s_db_jogada_enc, 
+          sseg => msg_hex3
+        );
 
-    HEX_JOG: hexa7seg
-    port map (
-        hexa => s_db_jogada_enc, 
-        sseg => db_jogada 
-    );
+        HEX_MEM: hexa7seg
+        port map (
+          hexa => s_db_nota_correta_enc, 
+          sseg => msg_hex4
+        );
 
-    HEX_MEM: hexa7seg
-    port map (
-        hexa => s_db_nota_aleatoria_enc, 
-        sseg => db_nota_aleatoria
-    );
+        HEX_ENDERECO: hexa7seg
+        port map(
+          hexa => s_db_rodada,
+          sseg => msg_hex5
+        );
+    end generate;
 
-    tb_nota_aleatoria_raw <= s_db_nota_aleatoria;
-    db_nota <= s_nota;
+    SEG7MSG: if not IS_7SEG_DEBUG generate
+        msgGen: msg_generator 
+        port map (
+            erros    => s_erros,
+            rodada   => s_db_rodada,
+            msg_end  => s_msg_end,
+            hex0     => msg_hex0,
+            hex1     => msg_hex1,
+            hex2     => msg_hex2,
+            hex3     => msg_hex3,
+            hex4     => msg_hex4,
+            hex5     => msg_hex5
+        );
+    end generate;
+
+    tb_nota_correta_raw <= s_db_nota_correta;
     db_toca_nota <= s_toca_nota;
 end architecture;

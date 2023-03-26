@@ -46,7 +46,7 @@ entity contador_m_maior is
 end entity contador_m_maior;
 
 architecture comportamental of contador_m_maior is
-    signal IQ: integer range 0 to M-1;
+    signal IQ: integer range 0 to M-1 := 0;
 begin
   
     process (clock,zera_as,zera_s,conta,IQ)
