@@ -18,6 +18,14 @@ entity note_genius is
         pronto       : out std_logic;
         sinal_buzzer : out std_logic;
 
+        -- messages
+
+        msg_hex0          : out std_logic_vector (6 downto 0);
+        msg_hex1          : out std_logic_vector (6 downto 0);
+        msg_hex2          : out std_logic_vector (6 downto 0);
+        msg_hex3          : out std_logic_vector (6 downto 0);
+        msg_hex4          : out std_logic_vector (6 downto 0);
+        msg_hex5          : out std_logic_vector (6 downto 0);
         -- debug
         db_estado         : out std_logic_vector (6 downto 0);
         db_jogada         : out std_logic_vector (6 downto 0);
@@ -147,6 +155,19 @@ architecture arch of note_genius is
         );
     end component;
 
+    component msg_generator is
+        port (
+          erros   : in  std_logic_vector( 6 downto 0);
+          rodada  : in  std_logic_vector( 3 downto 0);
+          msg_end : in  std_logic_vector( 3 downto 0);
+          hex0    : out std_logic_vector( 6 downto 0);
+          hex1    : out std_logic_vector( 6 downto 0);
+          hex2    : out std_logic_vector( 6 downto 0);
+          hex3    : out std_logic_vector( 6 downto 0);
+          hex4    : out std_logic_vector( 6 downto 0);
+          hex5    : out std_logic_vector( 6 downto 0)
+        ) ;
+      end component;
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
@@ -176,6 +197,7 @@ architecture arch of note_genius is
     signal s_db_jogada         : std_logic_vector (11 downto 0);
     signal s_db_rodada         : std_logic_vector (3 downto 0);
     signal s_db_estado         : std_logic_vector (3 downto 0);
+    signal s_msg_end           : std_logic_vector (3 downto 0);
     signal s_toca_nota         : std_logic;
     signal s_shift_lfsr        : std_logic;
     signal s_reset_lfsr        : std_logic;
@@ -204,19 +226,20 @@ begin
     not_chaves <= not chaves;
 
     -- clock divider
-    CLKDIV: contador_m_maior
-    generic map (
-        M => 100000 -- generate 1khz clock
-    )
-    port map (
-        clock => clock,
-        zera_as => '0', 
-        zera_s => '0',
-        conta => '1',
-        Q => open,
-        fim => open,
-        meio => clk1khz
-    );
+    clk1khz <= clock;
+    -- CLKDIV: contador_m_maior 
+    -- generic map (
+    --     M => 100000 -- generate 1khz clock
+    -- )
+    -- port map (
+    --     clock => clock,
+    --     zera_as => '0', 
+    --     zera_s => '0',
+    --     conta => '1',
+    --     Q => open,
+    --     fim => open,
+    --     meio => clk1khz
+    -- );
 
     UC: unidade_controle
     port map (
@@ -256,8 +279,8 @@ begin
 	
     DF: fluxo_dados
     generic map (
-        timer_silencio_len => 500,
-        timer_nota_len => 1000
+        timer_silencio_len => 5,
+        timer_nota_len => 10
     )
     port map (
         clock => clk1khz,
@@ -352,6 +375,19 @@ begin
       hexa => s_db_nota_correta_enc, 
       sseg => db_nota_correta
     );
+
+    msgGen: msg_generator 
+        port map(
+          erros    => s_erros,
+          rodada   => s_db_rodada,
+          msg_end  => s_msg_end,
+          hex0     => msg_hex0,
+          hex1     => msg_hex1,
+          hex2     => msg_hex2,
+          hex3     => msg_hex3,
+          hex4     => msg_hex4,
+          hex5     => msg_hex5
+        ) ;
 
     tb_nota_correta_raw <= s_db_nota_correta;
     db_nota <= s_nota;

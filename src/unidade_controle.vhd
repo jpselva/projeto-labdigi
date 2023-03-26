@@ -37,6 +37,7 @@ entity unidade_controle is
         reset_lfsr             : out std_logic;
         shift_lfsr             : out std_logic;
         registra_reg_nota_corr : out std_logic;
+        msg_end                : out std_logic_vector(3 downto 0);
 
         -- debug
         db_estado           : out std_logic_vector(3 downto 0)
@@ -100,11 +101,13 @@ begin
         reset_lfsr        <= '0';
         shift_lfsr        <= '0';
         registra_reg_nota_corr <= '0';
-        reset_detetinic <= '0';
+        reset_detetinic   <= '0';
+        msg_end           <= "0000";
 
         case Eatual is
 
-            when inicial => 
+            when inicial =>
+                msg_end <= "0001"; 
                 if ( iniciar = '0' ) then
                     Eprox <= inicial;
                 else
@@ -126,6 +129,7 @@ begin
                 Eprox <= seleciona_modo;
 
             when seleciona_modo =>
+                msg_end <= "0010";
                 if ( iniciar_edge = '1' ) then
                     if ( sel_modo(0) = '1' ) then
                         Eprox <= seleciona_dif_tr;
@@ -139,6 +143,7 @@ begin
                 end if;
 
             when seleciona_dif_tr =>
+                msg_end <= "0010";
                 registra_regmasc <= '1';
 
                 if (sel_dificuldade(3) = '1') then
@@ -183,6 +188,7 @@ begin
                 end if;
 
             when espera_tr =>
+                msg_end <= "0011";
                 if ( jogada_feita = '0' ) then
                     Eprox <= espera_tr;
                 else
@@ -203,6 +209,7 @@ begin
                 end if;
 
             when espera_acertou_tr =>
+                msg_end <= "0100";
                 toca_nota <= '1';
                 conta_tnota <= '1';
 
@@ -222,6 +229,7 @@ begin
                 Eprox <= espera_silencio_tr;
 
 			when espera_errou_tr =>
+                msg_end <= "0101";
                 toca_nota <= '1';
                 conta_tnota <= '1';
 
@@ -240,7 +248,7 @@ begin
             
             when espera_silencio_tr =>
                 conta_tsil <= '1';
-
+                msg_end <= "0110";
                 if ( timeout_tsil = '0' ) then
                     Eprox <= espera_silencio_tr;
                 else
