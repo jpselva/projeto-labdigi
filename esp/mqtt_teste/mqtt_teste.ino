@@ -9,7 +9,6 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "....";
 // password in wifi_config
 const char* mqtt_server = "labdigi.wiseful.com.br";
 
@@ -19,7 +18,7 @@ int mqtt_port = 80;
 // Topic
 
 String inTopic = "inTeste";
-String outTopic = "outTeste";
+String outTopic = "outTeste"; 
 
 WiFiClient espClient;
 PubSubClient client(espClient);

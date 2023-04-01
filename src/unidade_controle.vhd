@@ -107,6 +107,7 @@ begin
         case Eatual is
 
             when inicial =>
+                shift_lfsr <= '1'; -- keep shifting ('random' seed)
                 msg_end <= "0001"; 
                 if ( iniciar = '0' ) then
                     Eprox <= inicial;
@@ -115,6 +116,7 @@ begin
                 end if;
             
             when preparacao =>
+                shift_lfsr <= '1';
                 zera_contjog <= '1';
                 zera_regnota <= '1';
                 zera_conterros <= '1';
@@ -129,6 +131,7 @@ begin
                 Eprox <= seleciona_modo;
 
             when seleciona_modo =>
+                shift_lfsr <= '1';
                 msg_end <= "0010";
                 if ( iniciar_edge = '1' ) then
                     if ( sel_modo(0) = '1' ) then
@@ -143,6 +146,7 @@ begin
                 end if;
 
             when seleciona_dif_tr =>
+                shift_lfsr <= '1';
                 msg_end <= "0010";
                 registra_regmasc <= '1';
 

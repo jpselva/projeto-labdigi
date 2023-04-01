@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Sat Mar 25 23:13:29 2023
+# Generated on: Fri Mar 31 15:51:44 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -98,7 +98,6 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE src/comparador_85.vhd
 	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-	set_global_assignment -name SOURCE_FILE db/note_genius.cmp.rdb
 	set_location_assignment PIN_B8 -to reset
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
