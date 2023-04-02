@@ -14,11 +14,15 @@ String passwd = "digi#@1A4";
 int mqtt_port = 80;
 String inTopic = "toESP";
 String outTopic = "fromESP";
-char payload[] = "*\0"; // will hold the payload to be sent to broker
+String stateTopic = "estado";
+String noteTopic = "nota";
+String errorsTopic = "erros";
+String roundTopic = "jogada";
 
 // Communication with FPGA
-HardwareSerial SerialFPGA(2); // Use UART 2 (gpio 16, 17)
-char byteFromFPGA;
+//HardwareSerial SerialFPGA(2); // Use UART 2 (gpio 16, 17)
+char bytesFromFPGA[] = "***\0";
+int byteCount = 0;
 
 void setup_wifi() {
   delay(10);
@@ -66,23 +70,54 @@ void mqtt_reconnect() {
 void setup() {
   // Setup serial ports
   Serial.begin(9600);
-  SerialFPGA.begin(9600, SERIAL_8N2, 16, 17);
+  //SerialFPGA.begin(9600, SERIAL_8N2, 16, 17);
   // Setup WiFi & Broker  
   setup_wifi();
   mqttClient.setServer(mqtt_server, mqtt_port);
 }
+
+char extractErrors(const char *payload) {
+  return payload[0] & 0x7F;
+}
+
+char extractRound(const char *payload) {
+  return (payload[1] & 0x3C) >> 2;
+}
+
+char extractNote(const char *payload) {
+  return ((payload[1] & 0x03) << 2) | ((payload[2] & 0x60) >> 5);
+}
+
+char extractState(const char *payload) {
+  return payload[2] & 0x1F;
+}
+
+#define MSGLEN 10
+char tmpErrors[MSGLEN];
+char tmpRound[MSGLEN];
+char tmpNote[MSGLEN];
+char tmpState[MSGLEN];
 
 void loop() {
   if (!mqttClient.connected())
     mqtt_reconnect();
   mqttClient.loop();
 
-  if (SerialFPGA.available()) {
-    byteFromFPGA = SerialFPGA.read();
-    Serial.print("I received a: ");
-    Serial.println(byteFromFPGA);
+  if (Serial.available()) {
+    byteCount = Serial.readBytesUntil(',', bytesFromFPGA, 3);
+    if (byteCount == 3) {
+      snprintf(tmpErrors, MSGLEN, "%d", extractErrors(bytesFromFPGA));
+      snprintf(tmpRound, MSGLEN, "%d", extractRound(bytesFromFPGA));
+      snprintf(tmpNote, MSGLEN, "%d", extractNote(bytesFromFPGA));
+      snprintf(tmpState, MSGLEN, "%d", extractState(bytesFromFPGA));
 
-    payload[0] = byteFromFPGA;
-    mqttClient.publish((user+"/"+outTopic).c_str(), payload);
+      mqttClient.publish((user+"/"+outTopic+"/"+errorsTopic).c_str(), tmpErrors);
+      mqttClient.publish((user+"/"+outTopic+"/"+roundTopic).c_str(), tmpRound);
+      mqttClient.publish((user+"/"+outTopic+"/"+noteTopic).c_str(), tmpNote);
+      mqttClient.publish((user+"/"+outTopic+"/"+stateTopic).c_str(), tmpState);
+
+      Serial.printf("got: %x %x %x\n", bytesFromFPGA[0], bytesFromFPGA[1], bytesFromFPGA[2]);
+      Serial.printf("published: %d %d %d %d\n", extractErrors(bytesFromFPGA), extractRound(bytesFromFPGA), extractNote(bytesFromFPGA), extractState(bytesFromFPGA));
+    }
   }
 }
