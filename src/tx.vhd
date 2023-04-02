@@ -5,7 +5,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity tx is
-	generic (baudrate     : integer := 9600);
+	generic (baudrate     : integer := 31250);
 	port (
 		clock		: in  std_logic;							
 		reset		: in  std_logic;							
@@ -18,9 +18,9 @@ entity tx is
 end tx;
 
 architecture exemplo of tx is 
-	signal clockdiv  : std_logic;
-	signal IQ		  : unsigned(25 downto 0);
-	signal buff		  : std_logic_vector(7 downto 0);
+	signal clockdiv : std_logic;
+	signal IQ	    : unsigned(25 downto 0);
+	signal buff	    : std_logic_vector(7 downto 0);
 	
 	type tipo_estado is (inicial, carrega, d0, d1, d2, d3, d4, d5, d6, d7, s0, s1, final);
 	signal estado   : tipo_estado;

@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Fri Mar 31 15:51:44 2023
+# Generated on: Sun Apr  2 00:03:27 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -60,21 +60,10 @@ if {$make_assignments} {
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
 	set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_REPORT_WORST_CASE_TIMING_PATHS OFF -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
-	set_global_assignment -name TDC_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
-	set_global_assignment -name TIMING_ANALYZER_DO_CCPP_REMOVAL ON -family "MAX 10"
-	set_global_assignment -name DISABLE_LEGACY_TIMING_ANALYZER OFF -family "MAX 10"
-	set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON -family "MAX 10"
-	set_global_assignment -name SYNCHRONIZATION_REGISTER_CHAIN_LENGTH 2 -family "MAX 10"
-	set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM ON -family "MAX 10"
-	set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS" -family "MAX 10"
-	set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON -family "MAX 10"
-	set_global_assignment -name AUTO_DELAY_CHAINS ON -family "MAX 10"
-	set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF -family "MAX 10"
-	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
-	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
+	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+	set_global_assignment -name VHDL_FILE src/serial_controller.vhd
+	set_global_assignment -name VHDL_FILE src/tx.vhd
 	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
 	set_global_assignment -name VHDL_FILE src/shift_register.vhd
 	set_global_assignment -name VHDL_FILE src/rom_palavras.vhd
@@ -96,8 +85,21 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE src/contador_m.vhd
 	set_global_assignment -name VHDL_FILE src/contador_163.vhd
 	set_global_assignment -name VHDL_FILE src/comparador_85.vhd
-	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+	set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_REPORT_WORST_CASE_TIMING_PATHS OFF -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
+	set_global_assignment -name TDC_CCPP_TRADEOFF_TOLERANCE 0 -family "MAX 10"
+	set_global_assignment -name TIMING_ANALYZER_DO_CCPP_REMOVAL ON -family "MAX 10"
+	set_global_assignment -name DISABLE_LEGACY_TIMING_ANALYZER OFF -family "MAX 10"
+	set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON -family "MAX 10"
+	set_global_assignment -name SYNCHRONIZATION_REGISTER_CHAIN_LENGTH 2 -family "MAX 10"
+	set_global_assignment -name SYNTH_RESOURCE_AWARE_INFERENCE_FOR_BLOCK_RAM ON -family "MAX 10"
+	set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS" -family "MAX 10"
+	set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON -family "MAX 10"
+	set_global_assignment -name AUTO_DELAY_CHAINS ON -family "MAX 10"
+	set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF -family "MAX 10"
+	set_global_assignment -name USE_CONFIGURATION_DEVICE ON -family "MAX 10"
+	set_global_assignment -name ENABLE_OCT_DONE ON -family "MAX 10"
 	set_location_assignment PIN_B8 -to reset
 	set_location_assignment PIN_A7 -to iniciar
 	set_location_assignment PIN_P11 -to clock
@@ -206,6 +208,7 @@ if {$make_assignments} {
 	set_location_assignment PIN_L18 -to msg_hex5[2]
 	set_location_assignment PIN_K20 -to msg_hex5[1]
 	set_location_assignment PIN_J20 -to msg_hex5[0]
+	set_location_assignment PIN_V10 -to sout
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Including default assignments

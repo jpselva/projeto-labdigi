@@ -30,6 +30,9 @@ architecture tb of note_genius_tb1 is
 
             -- other debug signals
             db_toca_nota      : out std_logic;
+            
+            -- to interface microcontroller
+            sout              : out std_logic;
 
             -- simulacao
             tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
@@ -47,6 +50,7 @@ architecture tb of note_genius_tb1 is
     signal sinal_buzzer        : std_logic;
     signal tb_nota_correta_raw : std_logic_vector (11 downto 0);
     signal db_toca_nota        : std_logic;
+    signal sout                : std_logic;
 
     constant TbPeriod : time := 1000 ns; -- EDIT Put right period here
     signal TbClock : std_logic := '0';
@@ -71,7 +75,8 @@ begin
         msg_hex2 => open,
         msg_hex3 => open,
         msg_hex4 => open,
-        msg_hex5 => open
+        msg_hex5 => open,
+        sout => sout
     );
 
     -- Clock generation
