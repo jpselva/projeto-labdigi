@@ -28,6 +28,9 @@ entity note_genius is
         -- other debug signals
         db_toca_nota      : out std_logic;
 
+        -- to interface microcontroller
+        sout              : out std_logic;
+
         -- simulacao
         tb_nota_correta_raw     : out std_logic_vector (11 downto 0)
     );
@@ -85,7 +88,8 @@ architecture arch of note_genius is
             shift_lfsr             : out std_logic;
             registra_reg_nota_corr : out std_logic;
             msg_end                : out std_logic_vector(3 downto 0);
-            db_estado              : out std_logic_vector(3 downto 0)
+            db_estado              : out std_logic_vector(3 downto 0);
+            state_serial           : out std_logic_vector(4 downto 0)
         );
     end component ;
 
@@ -167,6 +171,16 @@ architecture arch of note_genius is
         );
     end component;
 
+    component serial_controller is
+        port (
+            clock          : in  std_logic;
+            not_clock1khz  : in  std_logic;
+            reset          : in  std_logic;
+            bytes          : in  std_logic_vector(23 downto 0);
+            sout           : out std_logic
+        );
+    end component;
+
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
@@ -202,11 +216,13 @@ architecture arch of note_genius is
     signal s_reset_lfsr        : std_logic;
     signal s_registra_reg_nota_corr : std_logic;
     signal s_lfsr_compativel   : std_logic;
-
     signal clk1khz             : std_logic; -- clock corrected to 1khz
+    signal not_clk1khz         : std_logic;
     signal not_reset           : std_logic;
     signal not_iniciar         : std_logic;
     signal not_chaves          : std_logic_vector(11 downto 0);
+    signal state_serial        : std_logic_vector(4 downto 0);
+    signal esp_data            : std_logic_vector(23 downto 0);
 
     ---------------------------------------------
     -- other signals
@@ -223,6 +239,7 @@ begin
     not_reset <= not reset;
     not_iniciar <= not iniciar;
     not_chaves <= not chaves;
+    not_clk1khz <= not clk1khz;
 
     -- clock divider
     SYNTHCLK: if not IS_SIMULATION generate
@@ -279,7 +296,8 @@ begin
         db_estado => s_db_estado,
         sel_dificuldade => sel_dificuldade,
         msg_end => s_msg_end,
-        lfsr_compativel => s_lfsr_compativel
+        lfsr_compativel => s_lfsr_compativel,
+        state_serial => state_serial
     );
 
     SYNTHDF: if not IS_SIMULATION generate
@@ -372,21 +390,22 @@ begin
         saida => sinal_buzzer
       );
 
+    s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
+
+    ENC_MEM: encoder16x4         
+    port map (
+        I => s_db_nota_correta_pad,
+        O => s_db_nota_correta_enc
+    );
+
     SEG7DB: if IS_7SEG_DEBUG generate
         s_erros_pad <= "0"&s_erros;
         s_db_jogada_pad <= "0000"&s_db_jogada;
-        s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
 
         ENC_JOG: encoder16x4         
         port map (
             I => s_db_jogada_pad,
             O => s_db_jogada_enc
-        );
-
-        ENC_MEM: encoder16x4         
-        port map (
-            I => s_db_nota_correta_pad,
-            O => s_db_nota_correta_enc
         );
 
         HEX_ERROS1: hexa7seg -- Lower 4 bits
@@ -440,6 +459,17 @@ begin
             hex5     => msg_hex5
         );
     end generate;
+
+    esp_data <= state_serial&"000"&s_db_nota_correta_enc&s_db_rodada&s_erros&"0";
+
+    SERCON: serial_controller
+    port map (
+        clock => clock,
+        not_clock1khz => not_clk1khz,
+        reset => reset,
+        bytes => esp_data,
+        sout => sout
+    );
 
     tb_nota_correta_raw <= s_db_nota_correta;
     db_toca_nota <= s_toca_nota;

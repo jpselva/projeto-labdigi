@@ -39,6 +39,9 @@ entity unidade_controle is
         registra_reg_nota_corr : out std_logic;
         msg_end                : out std_logic_vector(3 downto 0);
 
+        -- para o serial
+        state_serial           : out std_logic_vector(4 downto 0);
+
         -- debug
         db_estado           : out std_logic_vector(3 downto 0)
     );
@@ -107,6 +110,7 @@ begin
         case Eatual is
 
             when inicial =>
+                shift_lfsr <= '1'; -- keep shifting ('random' seed)
                 msg_end <= "0001"; 
                 if ( iniciar = '0' ) then
                     Eprox <= inicial;
@@ -115,6 +119,7 @@ begin
                 end if;
             
             when preparacao =>
+                shift_lfsr <= '1';
                 zera_contjog <= '1';
                 zera_regnota <= '1';
                 zera_conterros <= '1';
@@ -129,6 +134,7 @@ begin
                 Eprox <= seleciona_modo;
 
             when seleciona_modo =>
+                shift_lfsr <= '1';
                 msg_end <= "0010";
                 if ( iniciar_edge = '1' ) then
                     if ( sel_modo(0) = '1' ) then
@@ -143,6 +149,7 @@ begin
                 end if;
 
             when seleciona_dif_tr =>
+                shift_lfsr <= '1';
                 msg_end <= "0010";
                 registra_regmasc <= '1';
 
@@ -331,4 +338,26 @@ begin
                      "1100" when toca_pr,            -- C
                      "1111" when others;             -- F
 
+    with Eatual select
+        state_serial <= "00000" when inicial,
+                        "00001" when preparacao,
+                        "00010" when seleciona_modo,
+                        "00011" when toca_tr,
+                        "00100" when espera_tr,
+                        "00101" when registra_tr,
+                        "00110" when comparacao_tr,
+                        "00111" when espera_errou_tr,
+                        "01000" when espera_acertou_tr,
+                        "01001" when errou_jogada_tr,
+                        "01010" when acertou_jogada_tr,
+                        "01011" when silencio_acertou_tr,
+                        "01100" when silencio_errou_tr,
+                        "01101" when fim_tr,
+                        "01110" when seleciona_dif_tr,
+                        "11111" when shift_lfsr_tr,
+                        "10000" when verifica_lfsr_tr,
+                        "10001" when espera_pr,
+                        "10010" when registra_pr,
+                        "10011" when toca_pr,
+                        "11111" when others; -- INVALID STATE
 end architecture fsm;

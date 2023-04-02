@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Mon Mar 27 11:32:56 2023
+# Generated on: Sun Apr  2 15:32:52 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -81,11 +81,14 @@ if {$make_assignments} {
 	set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_100MHZ -family "Cyclone V"
 	set_global_assignment -name ADVANCED_PHYSICAL_OPTIMIZATION ON -family "Cyclone V"
 	set_global_assignment -name ENABLE_OCT_DONE OFF -family "Cyclone V"
+	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_global_assignment -name VHDL_FILE src/unidade_controle.vhd
+	set_global_assignment -name VHDL_FILE src/tx.vhd
 	set_global_assignment -name VHDL_FILE src/shift_register.vhd
+	set_global_assignment -name VHDL_FILE src/serial_controller.vhd
 	set_global_assignment -name VHDL_FILE src/rom_palavras.vhd
 	set_global_assignment -name VHDL_FILE src/registrador_n.vhd
-	set_global_assignment -name VHDL_FILE src/ram_16x12.vhd
 	set_global_assignment -name VHDL_FILE src/note_genius_tb2.vhd
 	set_global_assignment -name VHDL_FILE src/note_genius_tb1.vhd
 	set_global_assignment -name VHDL_FILE src/note_genius.vhd
@@ -102,8 +105,6 @@ if {$make_assignments} {
 	set_global_assignment -name VHDL_FILE src/contador_m.vhd
 	set_global_assignment -name VHDL_FILE src/contador_163.vhd
 	set_global_assignment -name VHDL_FILE src/comparador_85.vhd
-	set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-	set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_location_assignment PIN_K22 -to chaves[3]
 	set_location_assignment PIN_B16 -to chaves[0]
 	set_location_assignment PIN_C16 -to chaves[1]
@@ -171,6 +172,9 @@ if {$make_assignments} {
 	set_location_assignment PIN_U13 -to sel_modo[0]
 	set_location_assignment PIN_V13 -to sel_modo[1]
 	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+	set_location_assignment PIN_N16 -to sout
+
+	# Including default assignments
 
 	# Commit assignments
 	export_assignments

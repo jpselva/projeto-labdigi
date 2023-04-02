@@ -4,4 +4,6 @@
 !*.qpf
 !*.tcl
 !README.md
+!/extra
 !/esp
+!/ui
