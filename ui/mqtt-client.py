@@ -125,7 +125,6 @@ def draw_keyboard(pos, nota):
         else:
           draw_key(black, (pos[0]+(i-6)*54, pos[1]))
     i+=1
-    
 def write_big(text, pos):
   img = big.render(text, True, beige)
   screen.blit(img, pos)
@@ -161,7 +160,7 @@ def escolhe_tela(est): # tela : (1000, 600)
       elif (est== "toca_tr"):
         write_big("tocando...",(30, 350))
       elif (est== "silencio_acertou_tr"):
-        write_huge("Rodada + 1",(240, 200))
+        write_huge("Rodada + 1",(20, 200))
       elif (est== "silencio_errou_tr"):
         write_huge("Erros + 1",(300, 200))
 
@@ -192,7 +191,7 @@ def escolhe_tela(est): # tela : (1000, 600)
     erro = big.render("ERRO: onde que você tá!?", True, beige)
 
 pygame.init()
-screen = pygame.display.set_mode((1000, 600))
+screen = pygame.display.set_mode((1000, 600), vsync=True)
 running = True
 
 background = black
@@ -216,13 +215,13 @@ while running:
   screen.fill(background)
   # Render
   escolhe_tela(estadoDict.get(estado_msg))
-  #for event in pygame.event.get() :
-  if pygame.event.get().type == pygame.QUIT :
-    running = False
-    client.publish(user+"/S0", payload="1", qos=0, retain=False)
-    time.sleep(2)
-    client.publish(user+"/"+outTopic, "Desliga", qos=0, retain=False)
-    time.sleep(2)
+  for event in pygame.event.get() :
+    if event.type == pygame.QUIT :
+      running = False
+      client.publish(user+"/S0", payload="1", qos=0, retain=False)
+      time.sleep(2)
+      client.publish(user+"/"+outTopic, "Desliga", qos=0, retain=False)
+      time.sleep(2)
     #elif event.type == MOUSEBUTTONDOWN:
     #  if rect.collidepoint(event.pos):
     #      moving  = True
