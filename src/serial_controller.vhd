@@ -4,11 +4,11 @@ use ieee.numeric_std.all;
 
 entity serial_controller is
     port (
-        clock          : in std_logic;
-        not_clock1khz  : in std_logic;
-        reset          : in std_logic;
-        bytes          : in std_logic_vector(23 downto 0);
-        sout           : out std_logic
+        clock  : in std_logic;
+        enable : in std_logic;
+        reset  : in std_logic;
+        bytes  : in std_logic_vector(23 downto 0);
+        sout   : out std_logic
     );
 end serial_controller;
 
@@ -27,7 +27,7 @@ architecture fsm of serial_controller is
     end component; 
 
     component tx is
-        generic (baudrate     : integer := 115200);
+        generic (baudrate     : integer := 9600);
         port (
             clock		: in  std_logic;							
             reset		: in  std_logic;							
@@ -51,7 +51,7 @@ begin
     port map (
         clock => clock,
         reset => reset,
-        sinal => not_clock1khz,
+        sinal => enable,
         pulso => start
     );
 
@@ -127,16 +127,34 @@ begin
             sel_dado <= "10";
 
             if tx_pronto = '1' then
-                Eprox <= idle;
+                Eprox <= wait4;
             else
                 Eprox <= byte3;
+            end if;
+
+        when wait4 =>
+            if tx_pronto = '0' then
+                Eprox <= byte4;
+            else
+                Eprox <= wait4;
+            end if;
+
+        when byte4 =>
+            tx_partida <= '1';
+            sel_dado <= "11";
+
+            if tx_pronto = '1' then
+                Eprox <= idle;
+            else
+                Eprox <= byte4;
             end if;
         end case;
     end process;
 
     with sel_dado select dado <=
-        bytes(7 downto 0) when "00",
-        bytes(15 downto 8) when "01",
+        bytes(7 downto 0)   when "00",
+        bytes(15 downto 8)  when "01",
         bytes(23 downto 16) when "10",
-        "00000000" when others;
+        "00101100"          when "11";
+        "00000000"          when others;
 end architecture;
