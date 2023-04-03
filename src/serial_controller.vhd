@@ -14,7 +14,7 @@ end serial_controller;
 
 architecture fsm of serial_controller is
     type state_t is (
-        idle, byte1, wait1, byte2, wait2, byte3
+        idle, byte1, wait1, byte2, wait2, byte3, wait4, byte4
     );
 
     component edge_detector is
@@ -155,6 +155,6 @@ begin
         bytes(7 downto 0)   when "00",
         bytes(15 downto 8)  when "01",
         bytes(23 downto 16) when "10",
-        "00101100"          when "11";
+        "00101100"          when "11",
         "00000000"          when others;
 end architecture;

@@ -38,7 +38,7 @@ end entity;
 
 architecture arch of note_genius is
     constant IS_SIMULATION : boolean := false; -- set to true when simulating
-    constant IS_7SEG_DEBUG : boolean := false; -- set to true when debugging with 7seg
+    constant IS_7SEG_DEBUG : boolean := true; -- set to true when debugging with 7seg
 
     component hexa7seg is
       port (
@@ -173,11 +173,11 @@ architecture arch of note_genius is
 
     component serial_controller is
         port (
-            clock          : in  std_logic;
-            not_clock1khz  : in  std_logic;
-            reset          : in  std_logic;
-            bytes          : in  std_logic_vector(23 downto 0);
-            sout           : out std_logic
+            clock  : in  std_logic;
+            enable : in  std_logic;
+            reset  : in  std_logic;
+            bytes  : in  std_logic_vector(23 downto 0);
+            sout   : out std_logic
         );
     end component;
 
@@ -223,6 +223,7 @@ architecture arch of note_genius is
     signal not_chaves          : std_logic_vector(11 downto 0);
     signal state_serial        : std_logic_vector(4 downto 0);
     signal esp_data            : std_logic_vector(23 downto 0);
+	 signal enable_sercon       : std_logic;
 
     ---------------------------------------------
     -- other signals
@@ -465,7 +466,7 @@ begin
     SERCON: serial_controller
     port map (
         clock => clock,
-        not_clock1khz => not_clk1khz,
+        enable => not_clk1khz,
         reset => reset,
         bytes => esp_data,
         sout => sout
