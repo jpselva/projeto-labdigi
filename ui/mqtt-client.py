@@ -216,14 +216,14 @@ while running:
   screen.fill(background)
   # Render
   escolhe_tela(estadoDict.get(estado_msg))
-  #for event in pygame.event.get() :
-  if pygame.event.get().type == pygame.QUIT :
-    running = False
-    client.publish(user+"/S0", payload="1", qos=0, retain=False)
-    time.sleep(2)
-    client.publish(user+"/"+outTopic, "Desliga", qos=0, retain=False)
-    time.sleep(2)
-    #elif event.type == MOUSEBUTTONDOWN:
+  for event in pygame.event.get() :
+    if event.type == pygame.QUIT :
+      running = False
+      client.publish(user+"/S0", payload="1", qos=0, retain=False)
+      time.sleep(2)
+      client.publish(user+"/"+outTopic, "Desliga", qos=0, retain=False)
+      time.sleep(2)
+      #elif event.type == MOUSEBUTTONDOWN:
     #  if rect.collidepoint(event.pos):
     #      moving  = True
   pygame.display.update()

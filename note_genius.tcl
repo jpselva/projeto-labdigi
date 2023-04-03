@@ -15,7 +15,7 @@
 
 # Quartus Prime: Generate Tcl File for Project
 # File: note_genius.tcl
-# Generated on: Sun Apr  2 15:32:52 2023
+# Generated on: Mon Apr 03 10:26:28 2023
 
 # Load Quartus Prime Tcl Project package
 package require ::quartus::project
@@ -44,7 +44,7 @@ if {$make_assignments} {
 	set_global_assignment -name FAMILY "Cyclone V"
 	set_global_assignment -name DEVICE 5CEBA4F23C7
 	set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
-	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARÃÂÃÂ§O 23, 2023"
+	set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:26:36  MARÃÂÃÂÃÂÃÂ§O 23, 2023"
 	set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 	set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 	set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
@@ -117,7 +117,7 @@ if {$make_assignments} {
 	set_location_assignment PIN_P17 -to chaves[9]
 	set_location_assignment PIN_M18 -to chaves[10]
 	set_location_assignment PIN_L17 -to chaves[11]
-	set_location_assignment PIN_M9 -to clock
+	set_location_assignment PIN_H13 -to clock
 	set_location_assignment PIN_W9 -to iniciar
 	set_location_assignment PIN_A12 -to pronto
 	set_location_assignment PIN_U7 -to reset
@@ -171,10 +171,8 @@ if {$make_assignments} {
 	set_location_assignment PIN_W19 -to msg_hex5[6]
 	set_location_assignment PIN_U13 -to sel_modo[0]
 	set_location_assignment PIN_V13 -to sel_modo[1]
-	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 	set_location_assignment PIN_N16 -to sout
-
-	# Including default assignments
+	set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 
 	# Commit assignments
 	export_assignments

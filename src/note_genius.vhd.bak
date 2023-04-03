@@ -171,16 +171,16 @@ architecture arch of note_genius is
         );
     end component;
 
-	 component serial_controller is
-	 	 port (
-			  clock   : in std_logic;
-			  clk1khz : in std_logic;
-			  reset   : in std_logic;
-	 		  bytes   : in std_logic_vector(23 downto 0);
-	 		  sout    : out std_logic
-	 	 );
-	 end component;
-	 
+    component serial_controller is
+        port (
+            clock  : in  std_logic;
+            enable : in  std_logic;
+            reset  : in  std_logic;
+            bytes  : in  std_logic_vector(23 downto 0);
+            sout   : out std_logic
+        );
+    end component;
+
     ---------------------------------------------
     -- interconnections
     ---------------------------------------------
@@ -466,7 +466,7 @@ begin
     SERCON: serial_controller
     port map (
         clock => clock,
-        clk1khz => clk1khz,
+        enable => not_clk1khz,
         reset => reset,
         bytes => esp_data,
         sout => sout
