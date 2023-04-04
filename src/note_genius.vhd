@@ -38,7 +38,7 @@ end entity;
 
 architecture arch of note_genius is
     constant IS_SIMULATION : boolean := false; -- set to true when simulating
-    constant IS_7SEG_DEBUG : boolean := true; -- set to true when debugging with 7seg
+    constant IS_7SEG_DEBUG : boolean := false; -- set to true when debugging with 7seg
 
     component hexa7seg is
       port (
@@ -172,6 +172,9 @@ architecture arch of note_genius is
     end component;
 
 	 component serial_controller is
+         generic (
+              baudrate : integer
+         );
 	 	 port (
 			  clock   : in std_logic;
 			  clk1khz : in std_logic;
@@ -223,7 +226,7 @@ architecture arch of note_genius is
     signal not_chaves          : std_logic_vector(11 downto 0);
     signal state_serial        : std_logic_vector(4 downto 0);
     signal esp_data            : std_logic_vector(23 downto 0);
-	 signal enable_sercon       : std_logic;
+	signal enable_sercon       : std_logic;
 
     ---------------------------------------------
     -- other signals
@@ -461,16 +464,35 @@ begin
         );
     end generate;
 
-    esp_data <= state_serial&"000"&s_db_nota_correta_enc&s_db_rodada&s_erros&"0";
+    esp_data <= "1"&s_db_nota_correta_enc(1 downto 0)&state_serial&"10"&s_db_rodada&s_db_nota_correta_enc(3 downto 2)&"1"&s_erros;
 
-    SERCON: serial_controller
-    port map (
-        clock => clock,
-        clk1khz => clk1khz,
-        reset => reset,
-        bytes => esp_data,
-        sout => sout
-    );
+    SERCONSYNTH: if not IS_SIMULATION generate
+        SERCON: serial_controller
+        generic map (
+            baudrate => 9600
+        )
+        port map (
+            clock => clock,
+            clk1khz => clk1khz,
+            reset => not_reset,
+            bytes => esp_data,
+            sout => sout
+        );
+    end generate;
+
+    SERCONSIM: if IS_SIMULATION generate
+        SERCON: serial_controller
+        generic map (
+            baudrate => 2500000
+        )
+        port map (
+            clock => clock,
+            clk1khz => clk1khz,
+            reset => not_reset,
+            bytes => esp_data,
+            sout => sout
+        );
+    end generate;
 
     tb_nota_correta_raw <= s_db_nota_correta;
     db_toca_nota <= s_toca_nota;
