@@ -4,6 +4,9 @@ use ieee.numeric_std.all;
 use ieee.math_real.all;
 
 entity serial_controller is
+    generic (
+        baudrate : integer := 9600
+    );
     port (
         clock   : in std_logic;
         clk1khz : in std_logic;
@@ -81,6 +84,9 @@ begin
 	 );
 
     TRAN: tx
+    generic map (
+        baudrate => baudrate
+    )
     port map (
         clock => clock,
         reset => reset,
