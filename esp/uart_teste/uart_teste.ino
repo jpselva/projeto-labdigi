@@ -20,7 +20,7 @@ String errorsTopic = "erros";
 String roundTopic = "jogada";
 
 // Communication with FPGA
-//HardwareSerial SerialFPGA(2); // Use UART 2 (gpio 16, 17)
+HardwareSerial SerialFPGA(2); // Use UART 2 (gpio 16, 17)
 char bytesFromFPGA[] = "***\0";
 int byteCount = 0;
 
@@ -70,7 +70,7 @@ void mqtt_reconnect() {
 void setup() {
   // Setup serial ports
   Serial.begin(9600);
-  //SerialFPGA.begin(9600, SERIAL_8N2, 16, 17);
+  SerialFPGA.begin(9600, SERIAL_8N2, 16, 17);
   // Setup WiFi & Broker  
   setup_wifi();
   mqttClient.setServer(mqtt_server, mqtt_port);
@@ -93,6 +93,7 @@ char extractState(const char *payload) {
 }
 
 #define MSGLEN 10
+char currErrors, currRound, currNote, currState, nextErrors, nextRound, nextNote, nextState;
 char tmpErrors[MSGLEN];
 char tmpRound[MSGLEN];
 char tmpNote[MSGLEN];
@@ -104,20 +105,45 @@ void loop() {
   mqttClient.loop();
 
   if (Serial.available()) {
-    byteCount = Serial.readBytesUntil(',', bytesFromFPGA, 3);
+    byteCount = SerialFPGA.readBytesUntil(',', bytesFromFPGA, 3);
     if (byteCount == 3) {
-      snprintf(tmpErrors, MSGLEN, "%d", extractErrors(bytesFromFPGA));
-      snprintf(tmpRound, MSGLEN, "%d", extractRound(bytesFromFPGA));
-      snprintf(tmpNote, MSGLEN, "%d", extractNote(bytesFromFPGA));
-      snprintf(tmpState, MSGLEN, "%d", extractState(bytesFromFPGA));
+      nextErrors = extractErrors(bytesFromFPGA);
+      nextRound = extractRound(bytesFromFPGA);
+      nextNote = extractNote(bytesFromFPGA);
+      nextState = extractState(bytesFromFPGA);
 
-      mqttClient.publish((user+"/"+outTopic+"/"+errorsTopic).c_str(), tmpErrors);
-      mqttClient.publish((user+"/"+outTopic+"/"+roundTopic).c_str(), tmpRound);
-      mqttClient.publish((user+"/"+outTopic+"/"+noteTopic).c_str(), tmpNote);
-      mqttClient.publish((user+"/"+outTopic+"/"+stateTopic).c_str(), tmpState);
+      if (nextErrors - currErrors <= 2) {
+        if (currErrors != nextErrors) {
+          snprintf(tmpErrors, MSGLEN, "%d", nextErrors);
+          currErrors = nextErrors;
+          mqttClient.publish((user+"/"+outTopic+"/"+errorsTopic).c_str(), tmpErrors);
+          Serial.printf("published %d errors\n", currErrors);
+        }
 
-      Serial.printf("got: %x %x %x\n", bytesFromFPGA[0], bytesFromFPGA[1], bytesFromFPGA[2]);
-      Serial.printf("published: %d %d %d %d\n", extractErrors(bytesFromFPGA), extractRound(bytesFromFPGA), extractNote(bytesFromFPGA), extractState(bytesFromFPGA));
+        if (currRound != nextRound) {
+          snprintf(tmpRound, MSGLEN, "%d", nextRound);
+          currRound = nextRound;
+          mqttClient.publish((user+"/"+outTopic+"/"+roundTopic).c_str(), tmpRound);
+          Serial.printf("published %d round\n", currRound);
+        }
+
+        if (currNote != nextNote) {
+          snprintf(tmpNote, MSGLEN, "%d", nextNote);
+          currNote = nextNote;
+          mqttClient.publish((user+"/"+outTopic+"/"+noteTopic).c_str(), tmpNote);
+          Serial.printf("published %d note\n", currNote);tractErrors(bytesFromFPGA)
+        }
+
+        if (currState != nextState) {
+          snprintf(tmpState, MSGLEN, "%d", nextState);
+          currState = nextState;
+          mqttClient.publish((user+"/"+outTopic+"/"+stateTopic).c_str(), tmpState);
+          Serial.printf("published %d state\n", currState);
+        }
+      }
+
+      //Serial.printf("got: %x %x %x\n", bytesFromFPGA[0], bytesFromFPGA[1], bytesFromFPGA[2]);
+      //Serial.printf("published: %d %d %d %d\n", extractErrors(bytesFromFPGA), extractRound(bytesFromFPGA), extractNote(bytesFromFPGA), extractState(bytesFromFPGA));
     }
   }
 }
