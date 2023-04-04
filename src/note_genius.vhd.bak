@@ -394,7 +394,7 @@ begin
         saida => sinal_buzzer
       );
 
-    s_db_nota_correta_pad <= "0000"&s_nota;
+    s_db_nota_correta_pad <= "0000"&s_db_nota_correta;
 
     ENC_MEM: encoder16x4         
     port map (
