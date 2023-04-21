@@ -10,4 +10,4 @@ If  you modify the pin assignments and want to push them:
 
 * Navigate to `Project > Generate tcl files for project`, make sure "Include default assignments is  selected", and overwrite the original `note_genius.tcl` by clicking `OK`.
 
-The code that should be loaded in the ESP-32 is located at `esp/uart_teste/uart_teste.ino
+The code that should be loaded in the ESP-32 is located at `esp/uart_teste/uart_teste.ino` 
